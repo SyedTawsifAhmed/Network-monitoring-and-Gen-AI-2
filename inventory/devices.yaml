@@ -1,0 +1,25 @@
+---
+devices:
+  R1:
+    hostname: R1
+    ip: 172.16.184.27
+    device_type: cisco_ios
+    username: admin
+    password: admin
+    role: core
+
+  R2:
+    hostname: R2
+    ip: 172.16.184.28
+    device_type: cisco_ios
+    username: admin
+    password: admin
+    role: edge-left
+
+  R3:
+    hostname: R3
+    ip: 172.16.184.29
+    device_type: cisco_ios
+    username: admin
+    password: admin
+    role: edge-right
