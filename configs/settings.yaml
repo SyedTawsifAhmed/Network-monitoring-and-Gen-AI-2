@@ -1,0 +1,34 @@
+project:
+  name: network-config-genai
+  lab: cml
+  vcs: github
+
+polling:
+  enabled: true
+  interval_minutes: 1
+  command_config: "show running-config"
+  command_logs: "show logging | last 50"
+
+storage:
+  current_config_path: "data/configs/current"
+  archive_config_path: "data/configs/archive"
+  diff_path: "data/diffs"
+  log_path: "data/logs"
+
+ai:
+  provider: gemini
+  model: gemini-2.5-flash-lite
+  api_env_var: GEMINI_API_KEY
+  include_topology: true
+  include_old_config: true
+  include_diff: true
+  include_logs: true
+  max_log_lines: 30
+  temperature: 0.2
+
+notifications:
+  enabled: false
+  method: N/A
+
+rollback:
+  enabled: false

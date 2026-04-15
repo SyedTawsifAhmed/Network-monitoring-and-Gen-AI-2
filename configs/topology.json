@@ -1,0 +1,74 @@
+{
+  "lab_name": "cml-network-config-genai",
+  "devices": {
+    "R1": {
+      "role": "core-router",
+      "neighbors": [
+        {
+          "device": "R2",
+          "local_interface": "GigabitEthernet2",
+          "neighbor_interface": "GigabitEthernet2",
+          "relationship": "internal-routing-peer"
+        },
+        {
+          "device": "R3",
+          "local_interface": "GigabitEthernet3",
+          "neighbor_interface": "GigabitEthernet3",
+          "relationship": "internal-routing-peer"
+        },
+        {
+          "device": "ext-conn-4",
+          "local_interface": "GigabitEthernet1",
+          "neighbor_interface": "external",
+          "relationship": "upstream-external"
+        }
+      ]
+    },
+    "R2": {
+      "role": "edge-router-left",
+      "neighbors": [
+        {
+          "device": "R1",
+          "local_interface": "GigabitEthernet2",
+          "neighbor_interface": "GigabitEthernet2",
+          "relationship": "internal-routing-peer"
+        },
+        {
+          "device": "R3",
+          "local_interface": "GigabitEthernet4",
+          "neighbor_interface": "GigabitEthernet4",
+          "relationship": "lateral-routing-peer"
+        },
+        {
+          "device": "ext-conn-0",
+          "local_interface": "GigabitEthernet1",
+          "neighbor_interface": "external",
+          "relationship": "external-access"
+        }
+      ]
+    },
+    "R3": {
+      "role": "edge-router-right",
+      "neighbors": [
+        {
+          "device": "R1",
+          "local_interface": "GigabitEthernet3",
+          "neighbor_interface": "GigabitEthernet3",
+          "relationship": "internal-routing-peer"
+        },
+        {
+          "device": "R2",
+          "local_interface": "GigabitEthernet4",
+          "neighbor_interface": "GigabitEthernet4",
+          "relationship": "lateral-routing-peer"
+        },
+        {
+          "device": "ext-conn-1",
+          "local_interface": "GigabitEthernet1",
+          "neighbor_interface": "external",
+          "relationship": "external-access"
+        }
+      ]
+    }
+  }
+}
