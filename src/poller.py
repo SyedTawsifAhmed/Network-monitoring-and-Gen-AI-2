@@ -4,12 +4,15 @@ import subprocess
 from utils import load_yaml, load_json, ensure_dir, write_text, read_text
 from collector import collect_device_data
 from gen_ai_client import analyze_change
+from notifier import send_role_based_email_notifications
 from dotenv import load_dotenv
 from pathlib import Path
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = PROJECT_ROOT / ".env"
 load_dotenv(ENV_FILE)
+
 
 SETTINGS_PATH = "configs/settings.yaml"
 INVENTORY_PATH = "inventory/devices.yaml"
@@ -142,11 +145,27 @@ def main():
             logs=logs
         )
 
-        ai_summary = analyze_change(settings, payload)
+        summary = analyze_change(settings, payload)
+
+        event = {
+            "device_name": device_name,
+            "device_role": device_data.get("role", "unknown"),
+            "timestamp": timestamp,
+            "diff_file": str(diff_file),
+            "log_file": str(device_log_file),
+            "ai_summary_file": "Not saved yet"
+        }
 
         print(f"[!] Change detected for {device_name}")
-        print(ai_summary)
+        print(summary.model_dump_json(indent=2))
         print("-" * 80)
+
+        try:
+            sent = send_role_based_email_notifications(settings, event, summary)
+            if sent:
+                print(f"[+] Role-based email notifications sent for {device_name}")
+        except Exception as e:
+            print(f"[!] Email notification failed for {device_name}: {e}")
 
 
 if __name__ == "__main__":
