@@ -1,0 +1,22 @@
+diff --git a/data/configs/current/R1.cfg b/data/configs/current/R1.cfg
+index ec76ed6..5378004 100644
+--- a/data/configs/current/R1.cfg
++++ b/data/configs/current/R1.cfg
+@@ -1,7 +1,7 @@
+ Building configuration...
+-Current configuration : 3945 bytes
++Current configuration : 3964 bytes
+ !
+-! Last configuration change at 19:29:56 UTC Wed Apr 15 2026
++! Last configuration change at 15:14:06 UTC Thu Apr 16 2026
+ !
+ version 17.3
+ service timestamps debug datetime msec
+@@ -148,6 +148,7 @@ interface GigabitEthernet2
+  no mop sysid
+ !
+ interface GigabitEthernet3
++ description TO R3
+  no ip address
+  shutdown
+  negotiation auto

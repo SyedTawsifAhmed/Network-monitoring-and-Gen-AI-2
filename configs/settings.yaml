@@ -5,9 +5,9 @@ project:
 
 polling:
   enabled: true
-  interval_minutes: 1
   command_config: "show running-config"
   command_logs: "show logging | last 50"
+  interval_seconds: 300
 
 storage:
   current_config_path: "data/configs/current"
@@ -27,8 +27,26 @@ ai:
   temperature: 0.2
 
 notifications:
-  enabled: false
-  method: N/A
+  email:
+    enabled: true
+    smtp_host: smtp.gmail.com
+    smtp_port: 587
+    sender: your_email@example.com
+    use_tls: true
+    use_ssl: false
+    smtp_user_env_var: EMAIL_USERNAME
+    smtp_pass_env_var: EMAIL_PASSWORD
+    subject_prefix: "[NetConfig AI]"
+    groups:
+      executive:
+        recipients:
+          - bllapperman@gmail.com
+      technical_manager:
+        recipients:
+          - bllapperman@gmail.com
+      engineer:
+        recipients:
+          - bllapperman@gmail.com
 
 rollback:
   enabled: false
