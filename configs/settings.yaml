@@ -40,13 +40,13 @@ notifications:
     groups:
       executive:
         recipients:
-          - bllapperman@gmail.com
+          - syed.tawsif.ahmed@torontomu.ca
       technical_manager:
         recipients:
-          - bllapperman@gmail.com
+          - syed.tawsif.ahmed@torontomu.ca
       engineer:
         recipients:
-          - bllapperman@gmail.com
+          - syed.tawsif.ahmed@torontomu.ca
 
 rollback:
   enabled: false
