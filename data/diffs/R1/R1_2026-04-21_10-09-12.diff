@@ -1,0 +1,63 @@
+diff --git a/data/configs/current/R1.cfg b/data/configs/current/R1.cfg
+index 5378004..fa14433 100644
+--- a/data/configs/current/R1.cfg
++++ b/data/configs/current/R1.cfg
+@@ -1,7 +1,7 @@
+ Building configuration...
+-Current configuration : 3964 bytes
++Current configuration : 3894 bytes
+ !
+-! Last configuration change at 15:14:06 UTC Thu Apr 16 2026
++! Last configuration change at 13:50:36 UTC Tue Apr 21 2026
+ !
+ version 17.3
+ service timestamps debug datetime msec
+@@ -27,7 +27,7 @@ no aaa new-model
+ !
+ !
+ !
+-ip domain name lab.local
++ip domain name netconfig-ai
+ !
+ !
+ !
+@@ -97,14 +97,14 @@ crypto pki certificate chain SLA-TrustPoint
+   D697DF7F 28
+   	quit
+ !
+-license udi pid CSR1000V sn 9QP1U7A7H0S
++license udi pid CSR1000V sn 9BHCT0Q44W8
+ diagnostic bootup level minimal
+ memory free low-watermark processor 71464
+ !
+ !
+ spanning-tree extend system-id
+ !
+-username admin privilege 15 secret 9 $9$ngU4VxMEOznDY.$J5I9/7LDzdjxQ7MrnKr9tlF0KO/vlZTF3X0evj3rW8c
++username admin privilege 15 secret 9 $9$B8xNosOL.jRVEE$H384cIrWSqDeH737mG1O7mcDLhDg.QmKmXp/GvChH66
+ !
+ redundancy
+ !
+@@ -133,14 +133,12 @@ redundancy
+ !
+ !
+ interface GigabitEthernet1
+- description TO EXTERNAL CONNECTOR
+  ip address dhcp
+  negotiation auto
+  no mop enabled
+  no mop sysid
+ !
+ interface GigabitEthernet2
+- description TO R2
+  no ip address
+  shutdown
+  negotiation auto
+@@ -148,7 +146,6 @@ interface GigabitEthernet2
+  no mop sysid
+ !
+ interface GigabitEthernet3
+- description TO R3
+  no ip address
+  shutdown
+  negotiation auto

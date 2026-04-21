@@ -91,7 +91,7 @@ def rollback_device(device_data, config_file_path, dry_run=False):
     print(f"[+] Applying rollback config: {config_file_path}")
 
     with ConnectHandler(**device) as conn:
-        output = conn.send_config_set(config_lines)
+        output = conn.send_config_set(config_lines, read_timeout=120, cmd_verify=False)
         save_output = conn.save_config()
 
     print(f"[+] Rollback completed for {device_data['hostname']}")
@@ -134,13 +134,11 @@ def main():
     device_data = devices[args.device_name]
     target_config = find_latest_archive(args.device_name, max_age_hours=args.hours)
 
-    output = rollback_device(
+    rollback_device(
         device_data=device_data,
         config_file_path=target_config,
         dry_run=args.dry_run,
     )
-
-    print(output)
 
 
 if __name__ == "__main__":

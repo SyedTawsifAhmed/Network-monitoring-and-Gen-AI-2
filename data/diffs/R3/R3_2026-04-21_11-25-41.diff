@@ -1,0 +1,31 @@
+diff --git a/data/configs/current/R3.cfg b/data/configs/current/R3.cfg
+index 62ab519..b00ef3b 100644
+--- a/data/configs/current/R3.cfg
++++ b/data/configs/current/R3.cfg
+@@ -1,7 +1,7 @@
+ Building configuration...
+-Current configuration : 3894 bytes
++Current configuration : 3977 bytes
+ !
+-! Last configuration change at 13:59:03 UTC Tue Apr 21 2026
++! Last configuration change at 15:23:20 UTC Tue Apr 21 2026
+ !
+ version 17.3
+ service timestamps debug datetime msec
+@@ -133,7 +133,7 @@ redundancy
+ !
+ !
+ interface GigabitEthernet1
+- ip address dhcp
++ ip address 172.16.184.32 255.255.255.0
+  negotiation auto
+  no mop enabled
+  no mop sysid
+@@ -163,6 +163,7 @@ ip forward-protocol nd
+ no ip http server
+ ip http secure-server
+ !
++ip route 0.0.0.0 0.0.0.0 172.16.184.1 name management_route
+ ip ssh version 2
+ !
+ !

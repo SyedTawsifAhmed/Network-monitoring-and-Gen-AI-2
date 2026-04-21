@@ -111,8 +111,6 @@ def send_role_based_email_notifications(settings, event, summary):
     smtp_host = email_cfg["smtp_host"]
     smtp_port = int(email_cfg["smtp_port"])
     sender = email_cfg["sender"]
-    use_tls = email_cfg.get("use_tls", True)
-    use_ssl = email_cfg.get("use_ssl", False)
     groups = email_cfg.get("groups", {})
     subject = build_email_subject(settings, event, summary)
     context = ssl.create_default_context()
@@ -137,19 +135,9 @@ def send_role_based_email_notifications(settings, event, summary):
     if not messages:
         return False
 
-    if use_ssl:
-        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
-            server.login(smtp_user, smtp_pass)
-            for msg in messages:
-                server.send_message(msg)
-    else:
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
-            server.ehlo()
-            if use_tls:
-                server.starttls(context=context)
-                server.ehlo()
-            server.login(smtp_user, smtp_pass)
-            for msg in messages:
-                server.send_message(msg)
+    with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
+        server.login(smtp_user, smtp_pass)
+        for msg in messages:
+            server.send_message(msg)
 
     return True
