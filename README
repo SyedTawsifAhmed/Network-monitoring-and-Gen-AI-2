@@ -1,1 +1,69 @@
+# Network Configuration Management and Notification Using GenAI - NetConfig GenAI
+
+## Description
+
+In modern complex network environments, configuration changes in routers, switches,
+and firewalls can significantly impact performance, availability, and security of the system.
+Manual tracking of configuration updates is error-prone and often lacks clear
+documentation of changes. In this project an intelligent Network Configuration
+Management and Reporting framework powered by Generative AI (GenAI) will be
+developed. The proposed system automatically forwards configuration updates to a
+centralized GenAI server whenever modifications occur. The server maintains version-
+controlled records of both previous and current configurations, automatically identifies
+and highlights differences between versions, and stores them for auditing and rollback
+purposes. Additionally, by analyzing device logs, the GenAI engine generates clear,
+human-readable notifications summarizing what was changed, the potential impact, and
+any detected anomalies. This enhances operational visibility, improves compliance and
+auditing processes, reduces troubleshooting time, and strengthens overall network
+governance through intelligent automation.
+
+## Objectives:
+* Design a centralized GenAI-based system for automated network configuration
+version control.
+
+* Implement automatic detection and storage of previous and updated device
+configurations.
+
+* Develop a change-detection mechanism that highlights configuration differences
+between versions.
+
+* Analyze device logs to provide automated human readable alerts and
+notifications.
+
+* Support configuration rollback and auditing for compliance purposes.
+
+* Enhance operational efficiency and reduce human errors in network management
+
+## Setup
+
+To begin, first ensure Git is installed using the following commands in Bash:
+
+```
+sudo apt update
+sudo apt install git
+```
+
+
+Then clone the repository using the following link:
+https://github.com/salehazaman-2/Network-monitoring-and-Gen-AI.git
+
+Note: Commands may differ if using python vs python3
+
+After cloning the repo, enter the directory using `cd Network-monitorting-and-Gen-AI`
+
+Create your virtual enviroment using the command `python -m venv venv` and entering it using `source venv/bin/activate`
+
+Install all dependencies using the command `pip install -r requirements.txt`
+
+Now create a `.env` file and include the following information:
+
+```
+GEMINI_API_KEY=...
+EMAIL_USERNAME=...
+EMAIL_PASSWORD=...
+```
+
+## Usage
+* Scheduler: `python src/scheduler.py`
+* Rollback: `python src/rollback.py [-h] [--list] [--dry-run] [--hours HOURS] device_name`
 

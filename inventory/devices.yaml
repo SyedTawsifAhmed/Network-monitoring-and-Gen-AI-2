@@ -2,7 +2,7 @@
 devices:
   R1:
     hostname: R1
-    ip: 172.16.184.27
+    ip: 172.16.184.30
     device_type: cisco_ios
     username: admin
     password: admin
@@ -10,7 +10,7 @@ devices:
 
   R2:
     hostname: R2
-    ip: 172.16.184.28
+    ip: 172.16.184.31
     device_type: cisco_ios
     username: admin
     password: admin
@@ -18,7 +18,7 @@ devices:
 
   R3:
     hostname: R3
-    ip: 172.16.184.29
+    ip: 172.16.184.32
     device_type: cisco_ios
     username: admin
     password: admin

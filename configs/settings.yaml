@@ -30,10 +30,8 @@ notifications:
   email:
     enabled: true
     smtp_host: smtp.gmail.com
-    smtp_port: 587
+    smtp_port: 465
     sender: your_email@example.com
-    use_tls: true
-    use_ssl: false
     smtp_user_env_var: EMAIL_USERNAME
     smtp_pass_env_var: EMAIL_PASSWORD
     subject_prefix: "[NetConfig AI]"
