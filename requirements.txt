@@ -3,3 +3,11 @@ PyYAML
 google-genai
 requests
 python-dotenv
+flask
+transformers
+accelerate
+torch
+sentence-transformers
+faiss-cpu
+numpy
+pandas
