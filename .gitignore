@@ -2,7 +2,6 @@
 .env
 __pycache__/
 *.py[cod]
-.env
 .cache/
 huggingface/
 *.bin
