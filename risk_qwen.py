@@ -7,7 +7,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
 DATASET_PATH = "all_samples_with_metadata.jsonl"
-QWEN_MODEL = "Qwen/Qwen3-1.7B"
+QWEN_MODEL = "Qwen/Qwen3-8B"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 TOP_K = 5
 
@@ -120,9 +120,7 @@ Expected Output:
 """
 
     prompt = f"""
-You are a network configuration risk analysis assistant.
-
-Analyze the proposed network configuration change and return ONLY valid JSON.
+Analyze the proposed network configuration change.
 
 Risk scoring:
 0-20 = low
@@ -134,18 +132,25 @@ Use these retrieved examples as guidance:
 
 {examples_text}
 
-Now analyze this new configuration:
+New configuration to analyze:
 
 {user_config}
 
-Return ONLY JSON in this format:
+Return EXACTLY one valid JSON object.
+
+Do not explain anything.
+Do not output <think>.
+Do not output markdown.
+Do not output text before or after the JSON.
+
+The JSON schema is:
 
 {{
-  "risk_score": 0,
-  "risk_level": "low",
-  "affected_areas": [],
-  "reason": "",
-  "recommended_action": ""
+  "risk_score": integer,
+  "risk_level": "low|medium|high|critical",
+  "affected_areas": [string],
+  "reason": string,
+  "recommended_action": string
 }}
 """
 
@@ -156,7 +161,14 @@ def generate_response(prompt):
     messages = [
         {
             "role": "system",
-            "content": "You are a network configuration risk analysis assistant. Return only valid JSON."
+            "content": """
+You are a network configuration risk analysis assistant.
+
+Do not explain your reasoning.
+Do not output <think>.
+Do not output markdown.
+Return only one valid JSON object.
+"""
         },
         {
             "role": "user",
@@ -167,21 +179,27 @@ def generate_response(prompt):
     text = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
-        add_generation_prompt=True
+        add_generation_prompt=True,
+        enable_thinking=False
     )
 
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     outputs = model.generate(
         **inputs,
-        max_new_tokens=350,
+        max_new_tokens=180,
         temperature=0.2,
-        do_sample=True,
+        do_sample=False,
         pad_token_id=tokenizer.eos_token_id
     )
 
     generated_tokens = outputs[0][inputs["input_ids"].shape[-1]:]
     response = tokenizer.decode(generated_tokens, skip_special_tokens=True)
+
+    response = response.replace("<think>", "").replace("</think>", "").strip()
+
+    if "{" in response and "}" in response:
+        response = response[response.find("{"):response.rfind("}") + 1]
 
     return response.strip()
 
@@ -195,3 +213,38 @@ def analyze_config(user_config):
         "assessment": result,
         "retrieved_examples": retrieved
     }
+
+if __name__ == "__main__":
+    initialize_rag()
+
+    print("\nNetwork Configuration Risk Analyzer")
+    print("Paste your configuration below.")
+    print("When finished, type END on a new line.\n")
+
+    lines = []
+
+    while True:
+        line = input()
+        if line.strip().upper() == "END":
+            break
+        lines.append(line)
+
+    user_config = "\n".join(lines)
+
+    if not user_config.strip():
+        print("No configuration entered.")
+    else:
+        output = analyze_config(user_config)
+
+        print("\nRisk Assessment:")
+        print(output["assessment"])
+
+        print("\nRetrieved Similar Examples:")
+        for ex in output["retrieved_examples"]:
+            print(
+                f"{ex['sample_id']} | "
+                f"Category: {ex['category']} | "
+                f"Risk: {ex['risk_level']} | "
+                f"Score: {ex['risk_score']} | "
+                f"Similarity: {ex['similarity']}"
+            )
