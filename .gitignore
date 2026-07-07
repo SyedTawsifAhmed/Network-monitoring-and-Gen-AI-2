@@ -12,3 +12,5 @@ huggingface/
 *.pth
 .ipynb_checkpoints/
 .DS_Store
+venv/
+*.pyc
