@@ -2,3 +2,13 @@
 .env
 __pycache__/
 *.py[cod]
+.env
+.cache/
+huggingface/
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth
+.ipynb_checkpoints/
+.DS_Store
