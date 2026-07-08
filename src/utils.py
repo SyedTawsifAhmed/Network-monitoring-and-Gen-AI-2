@@ -28,3 +28,9 @@ def read_text(path):
     if not path.exists():
         return None
     return path.read_text(encoding="utf-8")
+
+
+def write_json(path, data):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
