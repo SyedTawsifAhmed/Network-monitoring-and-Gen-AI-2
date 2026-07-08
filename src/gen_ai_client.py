@@ -6,7 +6,9 @@ from google.genai import types
 
 
 class ChangeSummary(BaseModel):
-    headline: str = Field(description="Short alert title for the configuration change")
+    headline: str = Field(
+        description="Short alert title for the configuration change"
+    )
 
     executive_summary: str = Field(
         description="Plain-language summary for a technical manager or informed non-technical manager"
@@ -24,7 +26,9 @@ class ChangeSummary(BaseModel):
         "Security Change",
         "Multiple Changes",
         "Unknown"
-    ] = Field(description="Main category of the detected configuration change")
+    ] = Field(
+        description="Main category of the detected configuration change"
+    )
 
     affected_services: List[str] = Field(
         description="Services that may be affected, such as routing, telemetry, management access, or user traffic"
@@ -35,11 +39,26 @@ class ChangeSummary(BaseModel):
     )
 
     risk_level: Literal["Low", "Medium", "High"] = Field(
-        description="Overall risk rating"
+        description="Overall cloud-model risk rating"
+    )
+
+    risk_score: int = Field(
+        ge=0,
+        le=100,
+        description="Cloud-model numeric risk score from 0 to 100, where 0 is no risk and 100 is critical risk"
+    )
+
+    decision_recommendation: Literal[
+        "Approve",
+        "Warn",
+        "Manual Review",
+        "Deny"
+    ] = Field(
+        description="Cloud model's recommended action before ensemble scoring"
     )
 
     risk_reason: str = Field(
-        description="Reason why this risk level was selected"
+        description="Reason why this risk level and risk score were selected"
     )
 
     potential_impact: str = Field(
@@ -63,11 +82,14 @@ class ChangeSummary(BaseModel):
     )
 
 
-
 def get_gemini_client(api_env_var):
     api_key = os.getenv(api_env_var)
+
     if not api_key:
-        raise ValueError(f"Missing required environment variable: {api_env_var}")
+        raise ValueError(
+            f"Missing required environment variable: {api_env_var}"
+        )
+
     return genai.Client(api_key=api_key)
 
 
@@ -84,6 +106,7 @@ The system is used for:
 - Operational impact analysis
 - Post-change validation guidance
 - Optional remediation or rollback recommendations
+- Ensemble risk scoring with a cloud model, local model, and rule engine
 
 Analyze only the supplied configuration diff, old config context, topology context, and device logs.
 Do not invent missing facts.
@@ -108,6 +131,23 @@ Recent Device Logs:
 
 Return JSON matching the schema.
 
+Risk scoring rules:
+- risk_score must be an integer from 0 to 100.
+- 0-24 = Low risk, usually safe to approve.
+- 25-49 = Low to moderate risk, usually warn.
+- 50-74 = Medium risk, usually manual review.
+- 75-100 = High risk, usually deny or require strict approval.
+- risk_level must be consistent with risk_score:
+  - 0-39 = Low
+  - 40-69 = Medium
+  - 70-100 = High
+
+Decision recommendation rules:
+- Approve: routine or low-risk changes with minimal expected impact.
+- Warn: low-to-medium risk changes that should be noted but not blocked.
+- Manual Review: unclear impact, routing changes, service-impacting changes, or incomplete evidence.
+- Deny: high-risk changes, suspicious changes, management-access risk, major routing disruption risk, or unsafe changes.
+
 Guidelines:
 - executive_summary should be understandable to a technical manager.
 - technical_summary should be short and suitable for engineers.
@@ -116,7 +156,9 @@ Guidelines:
 - validation_checks should list commands or checks that should be performed after the change.
 - rollback_recommendation should explain whether rollback is needed or only if validation fails.
 - anomalies should include unusual observations from the diff or logs, or be empty.
+- Do not overstate certainty. If evidence is limited, use Manual Review.
 """.strip()
+
 
 def analyze_change(settings, payload):
     model_name = settings["ai"]["model"]
@@ -131,7 +173,7 @@ def analyze_change(settings, payload):
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=temperature,
-            max_output_tokens=900,
+            max_output_tokens=1000,
             response_mime_type="application/json",
             response_json_schema=ChangeSummary.model_json_schema(),
         ),
