@@ -21,6 +21,10 @@ def collect_device_data(device_data, config_cmd, logs_cmd):
     return {
         "hostname": device_data["hostname"],
         "role": device_data.get("role", "unknown"),
+        "platform": device_data.get(
+            "platform",
+            device_data.get("device_type", "unknown"),
+        ),
         "prompt": prompt,
         "running_config": running_config,
         "logs": logs,
