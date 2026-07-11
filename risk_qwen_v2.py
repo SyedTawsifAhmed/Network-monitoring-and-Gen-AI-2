@@ -40,7 +40,7 @@ EMBED_MODEL = os.getenv(
     "EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2"
 )
 CACHE_DIR = Path(os.getenv("CACHE_DIR", ".rag_cache"))
-OUTPUT_PATH = Path(os.getenv("OUTPUT_PATH", "risk_assessment_output.json"))
+OUTPUT_PATH = Path(os.getenv("OUTPUT_PATH", "qwen_risk_assessment_output.json"))
 OUTPUT_SCHEMA_VERSION = "1.0"
 
 TOP_K = int(os.getenv("TOP_K", "3"))
