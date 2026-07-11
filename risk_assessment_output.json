@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "assessment_id": "1a06562f-836f-4e22-aa63-46c45e8fcd73",
+  "generated_at": "2026-07-11T23:24:00.293234+00:00",
+  "input_sha256": "a841342a038ea29d2a43a0566a37362b99b799522c9013108d0837a04a77ac7e",
+  "risk": {
+    "score": 10,
+    "level": "low",
+    "model_score": 10,
+    "deterministic_floor": 0,
+    "deterministic_floor_applied": false,
+    "score_source": "model"
+  },
+  "decision": {
+    "approval_required": false,
+    "auto_approval_allowed": true,
+    "recommended_action": "approve"
+  },
+  "change": {
+    "detected_operations": [
+      "interface_description"
+    ],
+    "destructive_operations": [],
+    "affected_areas": [
+      "interface",
+      "documentation"
+    ]
+  },
+  "reason": "Changing an interface description updates documentation only and does not alter forwarding behavior.",
+  "retrieval_evidence": [
+    {
+      "sample_id": "LOW_0034",
+      "category": "interface_description",
+      "sample_risk_score": 10,
+      "sample_risk_level": "low",
+      "operations": [
+        "interface_description"
+      ],
+      "semantic_similarity": 0.852,
+      "operation_similarity": 1.0,
+      "combined_score": 0.976
+    },
+    {
+      "sample_id": "LOW_0028",
+      "category": "interface_description",
+      "sample_risk_score": 8,
+      "sample_risk_level": "low",
+      "operations": [
+        "interface_description"
+      ],
+      "semantic_similarity": 0.843,
+      "operation_similarity": 1.0,
+      "combined_score": 0.972
+    },
+    {
+      "sample_id": "MEDIUM_0101",
+      "category": "interface_ip_change",
+      "sample_risk_score": 57,
+      "sample_risk_level": "high",
+      "operations": [
+        "interface_ip_change"
+      ],
+      "semantic_similarity": 0.725,
+      "operation_similarity": 0.0,
+      "combined_score": 0.363
+    }
+  ],
+  "engine_metadata": {
+    "model_file": "Qwen3-1.7B-Q8_0.gguf",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "retrieval_version": "operation-aware-v3",
+    "top_k": 3
+  }
+}

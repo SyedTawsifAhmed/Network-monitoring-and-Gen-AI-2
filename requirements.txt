@@ -6,8 +6,9 @@ python-dotenv
 flask
 transformers
 accelerate
-torch
-sentence-transformers
-faiss-cpu
-numpy
-pandas
+numpy>=1.26,<3
+faiss-cpu>=1.8,<2
+torch>=2.2,<3
+sentence-transformers>=3.0,<6
+llama-cpp-python>=0.3.7,<0.4
+huggingface-hub>=0.27,<2
