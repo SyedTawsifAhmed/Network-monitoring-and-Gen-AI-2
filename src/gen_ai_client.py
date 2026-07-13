@@ -199,7 +199,7 @@ Risk scoring rules:
 - 0-20 = low
 - 21-50 = medium
 - 51-80 = high
-- 81-100 = critical'
+- 81-100 = critical
 - risk_level must be consistent with risk_score:
   - 0-39 = Low
   - 40-69 = Medium

@@ -13,6 +13,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional, Any, Tuple
+from datetime import datetime, timezone
+import hashlib
 import re
 import difflib
 import json
@@ -45,29 +47,65 @@ class RuleFinding:
     matched_command: str
     hard_stop: bool = False
     reason: str = ""
+    rule_version: str = "1.1"
+    policy_reference: str = "organizational-network-change-policy"
 
 
 @dataclass
 class RuleEngineResult:
     rule_score: int
+    inherent_risk_score: int
+    residual_risk_score: int
     risk_level: str
     decision_hint: str
     hard_stop_triggered: bool
+    assessment_status: str
+    confidence: float
+    evidence_completeness: float
+    missing_evidence: List[str]
     findings: List[RuleFinding]
     affected_areas: List[str]
+    blast_radius: Dict[str, Any]
+    required_controls: List[str]
+    validation_checks: List[str]
+    rollback_actions: List[str]
+    recognized_commands: int
+    unrecognized_commands: List[str]
     configuration_diff: List[str]
     summary: str
+    engine_version: str
+    ruleset_version: str
+    policy_profile: str
+    evaluated_at: str
+    input_sha256: str
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "rule_score": self.rule_score,
+            "inherent_risk_score": self.inherent_risk_score,
+            "residual_risk_score": self.residual_risk_score,
             "risk_level": self.risk_level,
             "decision_hint": self.decision_hint,
             "hard_stop_triggered": self.hard_stop_triggered,
+            "assessment_status": self.assessment_status,
+            "confidence": self.confidence,
+            "evidence_completeness": self.evidence_completeness,
+            "missing_evidence": self.missing_evidence,
             "findings": [asdict(f) for f in self.findings],
             "affected_areas": self.affected_areas,
+            "blast_radius": self.blast_radius,
+            "required_controls": self.required_controls,
+            "validation_checks": self.validation_checks,
+            "rollback_actions": self.rollback_actions,
+            "recognized_commands": self.recognized_commands,
+            "unrecognized_commands": self.unrecognized_commands,
             "configuration_diff": self.configuration_diff,
             "summary": self.summary,
+            "engine_version": self.engine_version,
+            "ruleset_version": self.ruleset_version,
+            "policy_profile": self.policy_profile,
+            "evaluated_at": self.evaluated_at,
+            "input_sha256": self.input_sha256,
         }
 
     def to_json(self) -> str:
@@ -252,25 +290,62 @@ def make_diff(current_config: str, proposed_config: str) -> List[str]:
 
 
 def risk_level_from_score(score: int) -> str:
+    """Map scores to the common four-level scale used by the scoring engine."""
     if score >= 81:
+        return "critical"
+    if score >= 51:
         return "high"
-    if score >= 61:
-        return "medium-high"
     if score >= 21:
         return "medium"
     return "low"
 
 
-def decision_from_score(score: int, hard_stop: bool) -> str:
-    if hard_stop:
-        return "reject_or_senior_approval_required"
-    if score >= 81:
-        return "manual_review_required"
-    if score >= 51:
-        return "manual_review_required"
+def decision_from_score(score: int, hard_stop: bool, incomplete: bool = False) -> str:
+    """Return a conservative operational decision."""
+    if hard_stop or score >= 81:
+        return "deny"
+    if incomplete or score >= 51:
+        return "manual_review"
     if score >= 21:
         return "warn"
     return "approve"
+
+
+def aggregate_finding_scores(findings: List[RuleFinding]) -> int:
+    """Combine multiple findings without blindly summing them.
+
+    The highest finding establishes the base. Additional findings contribute a
+    diminishing 15 percent, and broader affected-area coverage adds a small
+    blast-radius penalty. The result is capped at 100.
+    """
+    if not findings:
+        return 0
+    scores = sorted((f.score for f in findings), reverse=True)
+    base = scores[0]
+    additional = sum(score * 0.15 for score in scores[1:])
+    areas = {area for finding in findings for area in finding.affected_areas}
+    breadth_penalty = max(0, len(areas) - 1) * 2
+    return min(100, round(base + additional + breadth_penalty))
+
+
+def assess_evidence_completeness(
+    current_config: str,
+    topology_context: str,
+    device_role: str,
+) -> Tuple[float, List[str]]:
+    missing: List[str] = []
+    if not current_config:
+        missing.append("current_config")
+    if not topology_context:
+        missing.append("topology_context")
+    if not device_role:
+        missing.append("device_role")
+    return round((3 - len(missing)) / 3, 2), missing
+
+
+def build_input_hash(*values: str) -> str:
+    normalized = "\n---\n".join(value or "" for value in values)
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
 def add_finding(
@@ -325,6 +400,7 @@ class CiscoIOSRuleEngine:
         topology_context: Optional[str] = None,
         device_role: Optional[str] = None,
         proposed_full_config: bool = False,
+        policy_profile: str = "enterprise_network_default",
     ) -> RuleEngineResult:
         """
         Evaluate a proposed Cisco IOS change.
@@ -366,27 +442,118 @@ class CiscoIOSRuleEngine:
         self._evaluate_combinations(parsed_commands, findings, topology_context, device_role)
         self._evaluate_removed_lines(removed_lines, findings, topology_context, device_role)
 
-        if not findings:
-            score = 0
-            hard_stop = False
-            summary = "No deterministic high-risk IOS patterns were detected. This does not guarantee the change is safe."
-        else:
-            score = max(f.score for f in findings)
-            hard_stop = any(f.hard_stop for f in findings)
-            rules = sorted({f.rule_id for f in findings})
-            summary = "Triggered deterministic rule(s): " + ", ".join(rules)
+        hard_stop = any(f.hard_stop for f in findings)
+        inherent_score = aggregate_finding_scores(findings)
+        evidence_completeness, missing_evidence = assess_evidence_completeness(
+            current_config, topology_context, device_role
+        )
+
+        # Do not interpret missing context or unsupported commands as evidence of safety.
+        matched_commands = {f.matched_command.strip().lower() for f in findings}
+        assessable_commands = [
+            cmd for cmd in parsed_commands
+            if not is_parent_context(cmd.command) and not is_context_exit(cmd.command)
+        ]
+        unrecognized_commands = [
+            cmd.command for cmd in assessable_commands
+            if cmd.command.strip().lower() not in matched_commands
+        ]
+        recognized_commands = len(assessable_commands) - len(unrecognized_commands)
+        parser_confidence = (
+            recognized_commands / len(assessable_commands)
+            if assessable_commands else 0.0
+        )
+        confidence = round(0.6 * parser_confidence + 0.4 * evidence_completeness, 2)
+
+        incomplete = bool(missing_evidence or unrecognized_commands)
+        score = inherent_score
+        if findings and evidence_completeness < 0.67:
+            score = max(score, 51)
+        if unrecognized_commands:
+            score = max(score, 35)
+        if hard_stop:
+            score = max(score, 81)
 
         areas = sorted({area for f in findings for area in f.affected_areas})
+        critical_context = any(
+            key in context_keywords(f"{topology_context} {device_role}")
+            for key in ["core", "uplink", "wan", "management", "provider"]
+        )
+        blast_level = "local"
+        if len(areas) >= 4 or critical_context:
+            blast_level = "site"
+        elif len(areas) >= 2:
+            blast_level = "segment"
+
+        required_controls: List[str] = []
+        validation_checks: List[str] = []
+        rollback_actions: List[str] = []
+        rule_ids = {f.rule_id for f in findings}
+        if findings:
+            required_controls.extend([
+                "Record an approved change ticket and responsible reviewer.",
+                "Confirm a maintenance window for service-impacting changes.",
+                "Verify that a tested rollback procedure is available before deployment.",
+            ])
+            validation_checks.append("Compare the intended configuration with the post-change running configuration.")
+        if any("INTERFACE" in rule_id for rule_id in rule_ids):
+            validation_checks.extend(["show ip interface brief", "show interfaces"])
+            rollback_actions.append("Restore the previous interface configuration.")
+        if any("OSPF" in rule_id for rule_id in rule_ids):
+            validation_checks.extend(["show ip ospf neighbor", "show ip route ospf"])
+            rollback_actions.append("Restore the previous OSPF statements or interface cost.")
+        if any("BGP" in rule_id for rule_id in rule_ids):
+            validation_checks.extend(["show ip bgp summary", "show ip route bgp"])
+            rollback_actions.append("Restore the previous BGP neighbor and policy configuration.")
+        if any("ACL" in rule_id for rule_id in rule_ids):
+            validation_checks.append("show access-lists")
+            rollback_actions.append("Restore the previous ACL and interface attachment.")
+
+        if not findings:
+            summary = (
+                "No deterministic risk rule matched. The result is incomplete and must not "
+                "be treated as proof that the change is safe."
+            )
+        else:
+            rules = sorted(rule_ids)
+            summary = "Triggered deterministic rule(s): " + ", ".join(rules)
+
+        assessment_status = "incomplete" if incomplete else "complete"
+        residual_score = score  # Reduced only after required controls are verified externally.
 
         return RuleEngineResult(
             rule_score=score,
+            inherent_risk_score=inherent_score,
+            residual_risk_score=residual_score,
             risk_level=risk_level_from_score(score),
-            decision_hint=decision_from_score(score, hard_stop),
+            decision_hint=decision_from_score(score, hard_stop, incomplete),
             hard_stop_triggered=hard_stop,
+            assessment_status=assessment_status,
+            confidence=confidence,
+            evidence_completeness=evidence_completeness,
+            missing_evidence=missing_evidence,
             findings=findings,
             affected_areas=areas,
-            configuration_diff=diff[:80],  # Limit output size for API/demo readability.
+            blast_radius={
+                "level": blast_level,
+                "affected_area_count": len(areas),
+                "critical_infrastructure_context": critical_context,
+                "redundancy_verified": False,
+            },
+            required_controls=sorted(set(required_controls)),
+            validation_checks=sorted(set(validation_checks)),
+            rollback_actions=sorted(set(rollback_actions)),
+            recognized_commands=recognized_commands,
+            unrecognized_commands=unrecognized_commands,
+            configuration_diff=diff[:80],
             summary=summary,
+            engine_version="2.0.0",
+            ruleset_version="ios-risk-rules-2026.07",
+            policy_profile=policy_profile,
+            evaluated_at=datetime.now(timezone.utc).isoformat(),
+            input_sha256=build_input_hash(
+                current_config, proposed_change, topology_context, device_role, policy_profile
+            ),
         )
 
     def _evaluate_command(
@@ -787,6 +954,7 @@ def evaluate_change(
     topology_context: Optional[str] = None,
     device_role: Optional[str] = None,
     proposed_full_config: bool = False,
+    policy_profile: str = "enterprise_network_default",
 ) -> RuleEngineResult:
     """Provide a simple public function for running the rule engine."""
 
@@ -800,6 +968,7 @@ def evaluate_change(
         topology_context=topology_context,
         device_role=device_role,
         proposed_full_config=proposed_full_config,
+        policy_profile=policy_profile,
     )
 
 
@@ -896,6 +1065,7 @@ def collect_interactive_input() -> Dict[str, Any]:
         "topology_context": topology_context,
         "device_role": device_role,
         "proposed_full_config": full_config_answer in {"y", "yes"},
+        "policy_profile": "enterprise_network_default",
     }
 
 
@@ -909,6 +1079,7 @@ def load_input_payload(input_file: str) -> Dict[str, Any]:
         device_role: Optional device role.
         proposed_full_config: Optional boolean indicating whether the proposed
             input is a complete desired configuration.
+        policy_profile: Optional organizational risk-tolerance profile name.
     """
 
     input_path = Path(input_file)
@@ -937,6 +1108,7 @@ def load_input_payload(input_file: str) -> Dict[str, Any]:
         "topology_context": payload.get("topology_context") or "",
         "device_role": payload.get("device_role") or "",
         "proposed_full_config": proposed_full_config,
+        "policy_profile": str(payload.get("policy_profile") or "enterprise_network_default"),
     }
 
 
@@ -987,6 +1159,7 @@ def main() -> None:
             topology_context=payload.get("topology_context"),
             device_role=payload.get("device_role"),
             proposed_full_config=payload.get("proposed_full_config", False),
+            policy_profile=payload.get("policy_profile", "enterprise_network_default"),
         )
 
         # Print the structured result for terminal users and calling processes.

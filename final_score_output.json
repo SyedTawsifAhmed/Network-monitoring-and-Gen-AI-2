@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-07-13T21:51:01.352161+00:00",
+  "final_score": 100.0,
+  "risk_level": "critical",
+  "decision": "deny",
+  "decision_reason": "A deterministic hard-stop rule was triggered.",
+  "weighted_score_before_overrides": 87.7,
+  "weights": {
+    "cloud_ai": 0.25,
+    "local_ai": 0.35,
+    "rule_engine": 0.4
+  },
+  "source_scores": {
+    "cloud_ai": 75.0,
+    "local_ai": 86.0,
+    "rule_engine": 97.0
+  },
+  "source_levels": {
+    "cloud_ai": "high",
+    "local_ai": "critical",
+    "rule_engine": "critical"
+  },
+  "source_decision_hints": {
+    "cloud_ai": "manual_review",
+    "local_ai": "reject_or_senior_approval_required",
+    "rule_engine": "deny"
+  },
+  "overrides_applied": [
+    "rule_engine_safety_floor",
+    "hard_stop_triggered"
+  ],
+  "hard_stop_triggered": true,
+  "destructive_operations": [
+    "interface_shutdown"
+  ],
+  "affected_areas": [
+    "Interface",
+    "Routing Reachability",
+    "User Traffic",
+    "connectivity",
+    "routing"
+  ],
+  "supporting_reasons": [
+    "Shutting down a core-facing interface on an edge router can lead to significant network disruption and loss of connectivity to critical network segments. The impact is high as it directly affects the path to the core network.",
+    "Loss of Layer 3 connectivity between R1 and the Core Switch, potentially impacting all traffic transiting this path and services relying on the core network.",
+    "Shutting down this interface may break an uplink or routing adjacency based on the topology context.",
+    "Interface appears critical based on role/topology context."
+  ],
+  "notification": {
+    "severity": "critical",
+    "title": "[CRITICAL] Network change decision: Deny",
+    "message": "Final risk score: 100.0/100. Decision: Deny. Sources: cloud=75.0, local=86.0, rules=97.0. Reason: A deterministic hard-stop rule was triggered.",
+    "requires_acknowledgement": true
+  },
+  "notification_delivery": {
+    "channel": "console",
+    "status": "printed"
+  }
+}
