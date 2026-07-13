@@ -1,12 +1,8 @@
-"""Network configuration risk analyzer with operation-aware RAG.
-
-The program retrieves relevant labelled examples from a cached FAISS index,
-uses a quantized Qwen GGUF model to produce a structured assessment, applies
-deterministic safety floors, and exports a compact JSON record for a downstream
-scoring engine.
-
-Most runtime settings can be overridden with environment variables. The main
-execution flow starts in :func:`main` near the bottom of this file.
+"""Risk analyzer for network configuration using operation-aware RAG.
+ Deterministic safety floors are applied, a quantized Qwen GGUF model 
+is used to provide a structured evaluation, pertinent labelled samples 
+are retrieved from a cached FAISS database, and a compact JSON record 
+is exported for a downstream scoring engine. 
 """
 
 from __future__ import annotations
