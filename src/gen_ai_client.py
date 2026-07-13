@@ -339,4 +339,4 @@ def analyze_change(
         )
 
     return result
-```
+

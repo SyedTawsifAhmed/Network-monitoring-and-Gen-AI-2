@@ -1,0 +1,38 @@
+{
+  "rule_score": 95,
+  "risk_level": "high",
+  "decision_hint": "reject_or_senior_approval_required",
+  "hard_stop_triggered": true,
+  "findings": [
+    {
+      "rule_id": "INTERFACE_SHUTDOWN",
+      "description": "Shuts down an interface.",
+      "score": 95,
+      "severity": "critical",
+      "affected_areas": [
+        "interface",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet2",
+      "matched_command": "shutdown",
+      "hard_stop": true,
+      "reason": "Interface appears critical based on role/topology context."
+    }
+  ],
+  "affected_areas": [
+    "connectivity",
+    "interface"
+  ],
+  "configuration_diff": [
+    "--- current",
+    "+++ proposed",
+    "@@ -1,3 +1,2 @@",
+    "-interface GigabitEthernet2",
+    "-ip address 10.0.12.1 255.255.255.252",
+    "-no shutdown",
+    "+int GigabitEthernet2",
+    "+shutdown"
+  ],
+  "summary": "Triggered deterministic rule(s): INTERFACE_SHUTDOWN"
+}
