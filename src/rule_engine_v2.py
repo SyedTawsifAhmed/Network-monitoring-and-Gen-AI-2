@@ -266,9 +266,9 @@ def decision_from_score(score: int, hard_stop: bool) -> str:
         return "reject_or_senior_approval_required"
     if score >= 81:
         return "manual_review_required"
-    if score >= 61:
+    if score >= 51:
         return "manual_review_required"
-    if score >= 31:
+    if score >= 21:
         return "warn"
     return "approve"
 

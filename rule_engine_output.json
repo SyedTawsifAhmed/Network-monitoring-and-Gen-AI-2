@@ -1,38 +1,78 @@
 {
-  "rule_score": 95,
-  "risk_level": "high",
-  "decision_hint": "reject_or_senior_approval_required",
-  "hard_stop_triggered": true,
+  "rule_score": 80,
+  "risk_level": "medium-high",
+  "decision_hint": "manual_review_required",
+  "hard_stop_triggered": false,
   "findings": [
+    {
+      "rule_id": "INTERFACE_DESCRIPTION_CHANGE",
+      "description": "Changes interface description.",
+      "score": 5,
+      "severity": "low",
+      "affected_areas": [
+        "interface",
+        "documentation"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet0/1",
+      "matched_command": "description Connection to Core Switch",
+      "hard_stop": false,
+      "reason": "Description changes do not affect traffic forwarding."
+    },
+    {
+      "rule_id": "INTERFACE_IP_CHANGE",
+      "description": "Adds or changes interface IP address.",
+      "score": 50,
+      "severity": "medium",
+      "affected_areas": [
+        "interface",
+        "routing",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet0/1",
+      "matched_command": "ip address 10.1.1.1 255.255.255.252",
+      "hard_stop": false,
+      "reason": "Changing interface addressing can affect reachability and routing."
+    },
     {
       "rule_id": "INTERFACE_SHUTDOWN",
       "description": "Shuts down an interface.",
-      "score": 95,
-      "severity": "critical",
+      "score": 80,
+      "severity": "high",
       "affected_areas": [
         "interface",
         "connectivity"
       ],
       "context_type": "interface",
-      "context_name": "GigabitEthernet2",
+      "context_name": "GigabitEthernet0/1",
       "matched_command": "shutdown",
-      "hard_stop": true,
-      "reason": "Interface appears critical based on role/topology context."
+      "hard_stop": false,
+      "reason": "Interface shutdown can remove connectivity."
     }
   ],
   "affected_areas": [
     "connectivity",
-    "interface"
+    "documentation",
+    "interface",
+    "routing"
   ],
   "configuration_diff": [
     "--- current",
     "+++ proposed",
-    "@@ -1,3 +1,2 @@",
-    "-interface GigabitEthernet2",
-    "-ip address 10.0.12.1 255.255.255.252",
-    "-no shutdown",
-    "+int GigabitEthernet2",
-    "+shutdown"
+    "@@ -1,3 +1,11 @@",
+    "+Current Configuration:",
+    "+",
+    "+interface GigabitEthernet0/1",
+    "+ description Connection to Core Switch",
+    "+ ip address 10.1.1.1 255.255.255.252",
+    "+ no shutdown",
+    "+",
+    "+Proposed Change:",
+    "+",
+    " interface GigabitEthernet0/1",
+    "  shutdown",
+    "-END\\"
   ],
-  "summary": "Triggered deterministic rule(s): INTERFACE_SHUTDOWN"
+  "summary": "Triggered deterministic rule(s): INTERFACE_DESCRIPTION_CHANGE, INTERFACE_IP_CHANGE, INTERFACE_SHUTDOWN"
 }

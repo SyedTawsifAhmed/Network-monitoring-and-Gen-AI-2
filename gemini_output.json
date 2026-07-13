@@ -1,0 +1,26 @@
+{
+    "headline": "Interface Shutdown on R1",
+    "executive_summary": "The configuration change proposes shutting down the GigabitEthernet0/1 interface on the edge router R1. This interface provides Layer 3 connectivity to the core switch. Shutting down this interface will disrupt connectivity to the core network and potentially impact services relying on that path.",
+    "technical_summary": "The proposed change administratively shuts down the GigabitEthernet0/1 interface on R1. This interface is configured with IP address 10.1.1.1/30 and connects to the core switch. This action will result in a loss of Layer 3 connectivity through this link.",
+    "change_type": "Interface Change",
+    "affected_services": [
+        "Routing Reachability",
+        "User Traffic"
+    ],
+    "changed_areas": [
+        "Interface"
+    ],
+    "risk_level": "High",
+    "risk_score": 75,
+    "decision_recommendation": "Manual Review",
+    "risk_reason": "Shutting down a core-facing interface on an edge router can lead to significant network disruption and loss of connectivity to critical network segments. The impact is high as it directly affects the path to the core network.",
+    "potential_impact": "Loss of Layer 3 connectivity between R1 and the Core Switch, potentially impacting all traffic transiting this path and services relying on the core network.",
+    "validation_checks": [
+        "show ip interface brief | include GigabitEthernet0/1",
+        "ping <core_switch_ip> source <R1_interface_ip>",
+        "show ip route"
+    ],
+    "recommended_action": "Manual review is recommended to confirm the business justification for shutting down this critical interface. If approved, schedule during a maintenance window.",
+    "rollback_recommendation": "If connectivity is lost or validation checks fail, the 'no shutdown' command should be applied to the GigabitEthernet0/1 interface to restore its operational state.",
+    "anomalies": []
+}

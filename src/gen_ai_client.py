@@ -195,10 +195,11 @@ Return JSON matching the schema.
 
 Risk scoring rules:
 - risk_score must be an integer from 0 to 100.
-- 0-24 = Low risk, usually safe to approve.
-- 25-49 = Low to moderate risk, usually warn.
-- 50-74 = Medium risk, usually manual review.
-- 75-100 = High risk, usually deny or require strict approval.
+- Risk scoring:
+- 0-20 = low
+- 21-50 = medium
+- 51-80 = high
+- 81-100 = critical'
 - risk_level must be consistent with risk_score:
   - 0-39 = Low
   - 40-69 = Medium
