@@ -1,14 +1,12 @@
 """
-rule_engine.py
+Cisco IOS-style configuration modifications using a context-aware deterministic rule engine.
 
-Context-aware deterministic rule engine for Cisco IOS-style configuration changes.
-
-1. Parsing IOS configuration hierarchy into contexts.
-2. Understanding where commands occur, such as interface, router ospf, router bgp, line vty, ACL, VLAN.
-3. Comparing current configuration against proposed configuration/change when both are provided.
-4. Applying topology and device-role context.
-5. Detecting dangerous command combinations.
-6. Returning structured output for Qwen/Gemini and a later consensus scoring engine.
+1. Contextualizing the IOS configuration hierarchy.
+2. Being aware of the locations of instructions such interface, router ospf, router bgp, line vty, ACL, and VLAN.
+3. When both are available, comparing the suggested configuration or modification with the existing one.
+4. Using device-role context and topology.
+5. Identifying potentially harmful command combinations.
+6. Providing organized results for Qwen/Gemini and a consensus scoring engine later on.
 """
 
 from __future__ import annotations
@@ -18,6 +16,7 @@ from typing import Dict, List, Optional, Any, Tuple
 import re
 import difflib
 import json
+from pathlib import Path
 
 
 # -----------------------------
@@ -171,20 +170,19 @@ def get_context(line: str) -> Tuple[str, str]:
 
 def parse_ios_config(config: str) -> List[ParsedCommand]:
     """
-    Lightweight Cisco IOS parser.
+    This parser purposefully doesn't use indentation. IOS commands 
+    are frequently represented as single, unindented lines in CML, 
+    Netmiko, Nornir, terminal grabs, and AI-generated command blocks. 
+    For instance:
 
-    This parser intentionally does NOT rely on indentation. CML, Netmiko,
-    Nornir, terminal captures, and AI-generated command blocks often represent
-    IOS commands as individual unindented lines, for example:
+    int g0/1 
+    shutdown
 
-        int g0/1
-        shutdown
-
-    The parser behaves more like the IOS CLI:
-    - A parent command such as "interface", "router ospf", or "line vty"
-      changes the current configuration context.
-    - Every following command belongs to that context until another parent
-      context is entered or an explicit "exit"/"end" is seen.
+    The parser functions more like the iOS CLI:
+    The current configuration context is altered by a parent command 
+    like "interface", "router ospf", or "line vty".
+    Until another parent context is entered or an explicit "exit" or 
+    "end" is observed, all further commands belong to that context.
     """
     config = normalize_config(config)
     if not config:
@@ -789,7 +787,12 @@ def evaluate_change(
     device_role: Optional[str] = None,
     proposed_full_config: bool = False,
 ) -> RuleEngineResult:
+    """Provide a simple public function for running the rule engine."""
+
+    # Create the engine here so callers do not need to instantiate the class.
     engine = CiscoIOSRuleEngine()
+
+    # Return the complete structured result to the calling application.
     return engine.evaluate(
         proposed_change=proposed_change,
         current_config=current_config,
@@ -799,18 +802,49 @@ def evaluate_change(
     )
 
 
+def save_result_to_json_file(
+    result: RuleEngineResult,
+    output_file: str = "rule_engine_output.json",
+) -> Path:
+    """Save the rule-engine result as a formatted JSON file.
+
+    Args:
+        result: The completed rule-engine evaluation result.
+        output_file: Name or path of the JSON file to create.
+
+    Returns:
+        The Path of the saved JSON file.
+    """
+
+    output_path = Path(output_file)
+
+    # Write the dictionary through json.dump so the generated file is valid,
+    # human-readable JSON that can be consumed by other applications.
+    with output_path.open("w", encoding="utf-8") as file:
+        json.dump(result.to_dict(), file, indent=2, ensure_ascii=False)
+        file.write("\n")
+
+    return output_path
+
+
 if __name__ == "__main__":
+    # Example proposed change submitted to the deterministic rule engine.
     proposed = """
 int GigabitEthernet2
 shutdown
 """
 
+    # Example of the interface's current configuration. This lets the engine
+    # create a configuration diff in addition to checking individual commands.
     current = """
 interface GigabitEthernet2
 ip address 10.0.12.1 255.255.255.252
 no shutdown
 """
 
+    # Evaluate the proposed change with topology and device-role context.
+    # Because this is a core-router OSPF link, shutting it down should be
+    # treated as more dangerous than shutting down an unused access port.
     result = evaluate_change(
         proposed_change=proposed,
         current_config=current,
@@ -818,4 +852,12 @@ no shutdown
         device_role="core_router",
     )
 
-    print(result.to_json())
+    # Convert the result once so the exact same JSON is shown on screen and
+    # saved for use by another component, report, or audit workflow.
+    json_output = result.to_json()
+    print(json_output)
+
+    # Save the formatted result to a standalone JSON file in the directory
+    # from which this script is executed.
+    saved_path = save_result_to_json_file(result, "rule_engine_output.json")
+    print(f"\nRule-engine output saved to: {saved_path.resolve()}")
