@@ -3,3 +3,4 @@ PyYAML
 google-genai
 requests
 python-dotenv
+nornir

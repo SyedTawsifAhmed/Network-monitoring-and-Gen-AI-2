@@ -1,0 +1,31 @@
+diff --git a/data/configs/current/R1.cfg b/data/configs/current/R1.cfg
+index 96184e5..b853893 100644
+--- a/data/configs/current/R1.cfg
++++ b/data/configs/current/R1.cfg
+@@ -1,7 +1,7 @@
+ Building configuration...
+-Current configuration : 6214 bytes
++Current configuration : 6279 bytes
+ !
+-! Last configuration change at 04:41:21 UTC Thu Apr 23 2026
++! Last configuration change at 04:45:13 UTC Thu Apr 23 2026
+ !
+ version 17.3
+ service timestamps debug datetime msec
+@@ -175,6 +175,7 @@ interface GigabitEthernet1
+ !
+ interface GigabitEthernet2
+  ip address 10.0.1.1 255.255.255.252
++ ip access-group 20 in
+  negotiation auto
+  no mop enabled
+  no mop sysid
+@@ -203,6 +204,8 @@ ip ssh version 2
+ !
+ ip access-list standard 10
+  10 permit any
++ip access-list standard 20
++ 10 deny   any
+ !
+ !
+ !

@@ -1,0 +1,22 @@
+diff --git a/data/configs/current/R3.cfg b/data/configs/current/R3.cfg
+index 8f35521..0b140bb 100644
+--- a/data/configs/current/R3.cfg
++++ b/data/configs/current/R3.cfg
+@@ -1,7 +1,7 @@
+ Building configuration...
+-Current configuration : 4338 bytes
++Current configuration : 4328 bytes
+ !
+-! Last configuration change at 00:27:08 UTC Fri Jul 10 2026
++! Last configuration change at 01:08:18 UTC Fri Jul 10 2026
+ !
+ version 17.3
+ service timestamps debug datetime msec
+@@ -141,7 +141,6 @@ interface GigabitEthernet1
+ !
+ interface GigabitEthernet2
+  no ip address
+- shutdown
+  negotiation auto
+  no mop enabled
+  no mop sysid
