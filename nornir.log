@@ -1,0 +1,10 @@
+2026-07-16 23:28:56,749 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts
+2026-07-16 23:34:53,783 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts
+2026-07-17 00:20:42,990 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts
+2026-07-17 00:46:36,004 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts
+2026-07-17 01:01:48,991 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts
+2026-07-17 01:04:53,070 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts
+2026-07-17 01:18:39,817 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts
+2026-07-17 01:27:06,797 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts
+2026-07-17 01:31:49,141 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts
+2026-07-17 01:48:45,043 -  nornir.core -     INFO -        run() - Running task 'collect_device_data' with args {'config_cmd': 'show running-config', 'logs_cmd': 'show logging | last 50'} on 8 hosts

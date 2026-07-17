@@ -44,9 +44,11 @@ CANDIDATE_K = int(os.getenv("CANDIDATE_K", "30"))
 MIN_EXACT_OPERATION_EXAMPLES = int(
     os.getenv("MIN_EXACT_OPERATION_EXAMPLES", "2")
 )
-MAX_EXAMPLE_CHARS = int(os.getenv("MAX_EXAMPLE_CHARS", "900"))
+MAX_EXAMPLE_CHARS = int(os.getenv("MAX_EXAMPLE_CHARS", "600"))
 MAX_OUTPUT_TOKENS = int(os.getenv("MAX_OUTPUT_TOKENS", "180"))
 CONTEXT_SIZE = int(os.getenv("CONTEXT_SIZE", "3072"))
+MAX_PROMPT_CHARS = int(os.getenv("MAX_PROMPT_CHARS", "9000"))
+MAX_CONTEXT_CHARS = int(os.getenv("MAX_CONTEXT_CHARS", "2000"))
 LLAMA_THREADS = int(os.getenv("LLAMA_THREADS", "3"))
 LLAMA_BATCH_THREADS = int(os.getenv("LLAMA_BATCH_THREADS", "3"))
 LLAMA_BATCH_SIZE = int(os.getenv("LLAMA_BATCH_SIZE", "128"))
@@ -842,9 +844,12 @@ def build_prompt(
 
     examples_text = "\n\n".join(example_blocks) or "No examples available."
 
-    # Keep full context if supplied, but cap pathological input size.
-    context = user_config[-7000:]
-    return f"""Analyze the proposed network configuration change.
+    # Keep context bounded so the prompt stays within the LLM window.
+    context = user_config[-MAX_CONTEXT_CHARS:]
+    if len(context) > MAX_CONTEXT_CHARS:
+        context = context[-MAX_CONTEXT_CHARS:]
+
+    prompt = f"""Analyze the proposed network configuration change.
 
 Scoring scale:
 0-20 low
@@ -852,7 +857,39 @@ Scoring scale:
 51-80 high
 81-100 critical
 
-Detected operations: {", ".join(operations)}
+Detected operations: {', '.join(operations)}
+Deterministic minimum score: {risk_floor}
+
+The final score MUST NOT be lower than {risk_floor}. Account for device role,
+topology context, blast radius, loss of connectivity, management lockout,
+routing disruption, security exposure, and rollback difficulty. Retrieved
+examples are guidance, not rules.
+
+Retrieved examples:
+{examples_text}
+
+Input context:
+{context}
+
+Proposed change being evaluated:
+{proposed_change}
+
+Return exactly one JSON object matching this schema:
+{json.dumps(JSON_SCHEMA, separators=(",", ":"))}
+"""
+
+    if len(prompt) > MAX_PROMPT_CHARS:
+        overflow = len(prompt) - MAX_PROMPT_CHARS
+        context = context[overflow:] if overflow < len(context) else context[-MAX_CONTEXT_CHARS:]
+        prompt = f"""Analyze the proposed network configuration change.
+
+Scoring scale:
+0-20 low
+21-50 medium
+51-80 high
+81-100 critical
+
+Detected operations: {', '.join(operations)}
 Deterministic minimum score: {risk_floor}
 
 The final score MUST NOT be lower than {risk_floor}. Account for device role,

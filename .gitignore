@@ -3,6 +3,7 @@
 __pycache__/
 *.py[cod]
 .cache/
+.rag_cache/
 huggingface/
 *.bin
 *.safetensors

@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-07-17T05:06:50.931678+00:00",
+  "final_score": 30.5,
+  "risk_level": "medium",
+  "decision": "manual_review",
+  "decision_reason": "The change has material or unclear service impact and requires operator approval.",
+  "weighted_score_before_overrides": 30.5,
+  "weights": {
+    "cloud_ai": 0.25,
+    "local_ai": 0.35,
+    "rule_engine": 0.4
+  },
+  "source_scores": {
+    "cloud_ai": 45.0,
+    "local_ai": 55.0,
+    "rule_engine": 0.0
+  },
+  "source_levels": {
+    "cloud_ai": "medium",
+    "local_ai": "high",
+    "rule_engine": "low"
+  },
+  "source_decision_hints": {
+    "cloud_ai": "manual_review",
+    "local_ai": "warn",
+    "rule_engine": "approve"
+  },
+  "overrides_applied": [],
+  "hard_stop_triggered": false,
+  "destructive_operations": [],
+  "affected_areas": [
+    "Interface",
+    "routing",
+    "management access",
+    "connectivity"
+  ],
+  "supporting_reasons": [
+    "Interfaces were enabled without IP or routing configurations, and a CLI syntax error occurred during the configuration application.",
+    "Enabling unconfigured interfaces may expose the network to unauthorized connections or unexpected state changes. The operational impact of the CLI error is uncertain without further command-line verification.",
+    "Changing interface addressing can affect directly connected reachability and routing adjacencies."
+  ],
+  "notification": {
+    "severity": "medium",
+    "title": "[MEDIUM] Network change decision: Manual Review",
+    "message": "Final risk score: 30.5/100. Decision: Manual Review. Sources: cloud=45.0, local=55.0, rules=0.0. Reason: The change has material or unclear service impact and requires operator approval.",
+    "requires_acknowledgement": true
+  },
+  "notification_delivery": {
+    "channel": "console",
+    "status": "printed"
+  }
+}

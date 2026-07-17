@@ -106,6 +106,11 @@ def parse_args():
         action="store_true",
         help="Collect configs/logs and write files, but skip AI analysis and notifications.",
     )
+    parser.add_argument(
+        "--skip-notifications",
+        action="store_true",
+        help="Skip sending email notifications from the poller. Useful when orchestration will send combined notifications later.",
+    )
     return parser.parse_args()
 
 
@@ -248,12 +253,15 @@ def main():
             print(summary.model_dump_json(indent=2))
             print("-" * 80)
 
-            try:
-                sent = send_role_based_email_notifications(settings, event, summary)
-                if sent:
-                    print(f"[+] Role-based email notifications sent for {device_name}")
-            except Exception as e:
-                print(f"[!] Email notification failed for {device_name}: {e}")
+            if args.skip_notifications:
+                print(f"[+] Skipping poller notifications for {device_name} because orchestrator will send the final combined notification.")
+            else:
+                try:
+                    sent = send_role_based_email_notifications(settings, event, summary)
+                    if sent:
+                        print(f"[+] Role-based email notifications sent for {device_name}")
+                except Exception as e:
+                    print(f"[!] Email notification failed for {device_name}: {e}")
 
 
 if __name__ == "__main__":

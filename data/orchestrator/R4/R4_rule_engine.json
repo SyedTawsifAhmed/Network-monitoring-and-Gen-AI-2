@@ -1,0 +1,286 @@
+{
+  "rule_score": 85,
+  "risk_level": "high",
+  "decision_hint": "manual_review_required",
+  "hard_stop_triggered": false,
+  "findings": [
+    {
+      "rule_id": "ENABLE_SECRET_CHANGE",
+      "description": "Changes enable secret/password.",
+      "score": 65,
+      "severity": "medium-high",
+      "affected_areas": [
+        "management",
+        "authentication",
+        "security"
+      ],
+      "context_type": "global",
+      "context_name": "global",
+      "matched_command": "enable secret 9 $9$EcrHGKtPcxTCHU$MGaG6hYQUpPE9RUYky299tWKAHPO4b6HObtsfKoNgKc",
+      "hard_stop": false,
+      "reason": "Enable credential changes affect privileged access."
+    },
+    {
+      "rule_id": "USERNAME_SECRET_CHANGE",
+      "description": "Adds or changes local credentials.",
+      "score": 55,
+      "severity": "medium",
+      "affected_areas": [
+        "management",
+        "authentication",
+        "security"
+      ],
+      "context_type": "global",
+      "context_name": "global",
+      "matched_command": "username admin privilege 15 secret 9 $9$Vf5B2f9PtU51NU$2GPYcA.Xl.9BOUk8mvcKNFbwp4/hc2S621.SdSZp2cc",
+      "hard_stop": false,
+      "reason": "Credential changes affect management security."
+    },
+    {
+      "rule_id": "INTERFACE_IP_CHANGE",
+      "description": "Adds or changes interface IP address.",
+      "score": 50,
+      "severity": "medium",
+      "affected_areas": [
+        "interface",
+        "routing",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet1",
+      "matched_command": "ip address 172.16.151.235 255.255.255.0",
+      "hard_stop": false,
+      "reason": "Changing interface addressing can affect reachability and routing."
+    },
+    {
+      "rule_id": "REMOVE_INTERFACE_IP",
+      "description": "Removes an interface IP address.",
+      "score": 85,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "routing",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet2",
+      "matched_command": "no ip address",
+      "hard_stop": false,
+      "reason": "Removing an IP address can break routing adjacencies and directly connected reachability."
+    },
+    {
+      "rule_id": "INTERFACE_SHUTDOWN",
+      "description": "Shuts down an interface.",
+      "score": 80,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet2",
+      "matched_command": "shutdown",
+      "hard_stop": false,
+      "reason": "Interface shutdown can remove connectivity."
+    },
+    {
+      "rule_id": "REMOVE_INTERFACE_IP",
+      "description": "Removes an interface IP address.",
+      "score": 85,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "routing",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet3",
+      "matched_command": "no ip address",
+      "hard_stop": false,
+      "reason": "Removing an IP address can break routing adjacencies and directly connected reachability."
+    },
+    {
+      "rule_id": "INTERFACE_SHUTDOWN",
+      "description": "Shuts down an interface.",
+      "score": 80,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet3",
+      "matched_command": "shutdown",
+      "hard_stop": false,
+      "reason": "Interface shutdown can remove connectivity."
+    },
+    {
+      "rule_id": "REMOVE_INTERFACE_IP",
+      "description": "Removes an interface IP address.",
+      "score": 85,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "routing",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet4",
+      "matched_command": "no ip address",
+      "hard_stop": false,
+      "reason": "Removing an IP address can break routing adjacencies and directly connected reachability."
+    },
+    {
+      "rule_id": "INTERFACE_SHUTDOWN",
+      "description": "Shuts down an interface.",
+      "score": 80,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet4",
+      "matched_command": "shutdown",
+      "hard_stop": false,
+      "reason": "Interface shutdown can remove connectivity."
+    },
+    {
+      "rule_id": "REMOVE_INTERFACE_IP",
+      "description": "Removes an interface IP address.",
+      "score": 85,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "routing",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet5",
+      "matched_command": "no ip address",
+      "hard_stop": false,
+      "reason": "Removing an IP address can break routing adjacencies and directly connected reachability."
+    },
+    {
+      "rule_id": "INTERFACE_SHUTDOWN",
+      "description": "Shuts down an interface.",
+      "score": 80,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet5",
+      "matched_command": "shutdown",
+      "hard_stop": false,
+      "reason": "Interface shutdown can remove connectivity."
+    },
+    {
+      "rule_id": "REMOVE_INTERFACE_IP",
+      "description": "Removes an interface IP address.",
+      "score": 85,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "routing",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet6",
+      "matched_command": "no ip address",
+      "hard_stop": false,
+      "reason": "Removing an IP address can break routing adjacencies and directly connected reachability."
+    },
+    {
+      "rule_id": "INTERFACE_SHUTDOWN",
+      "description": "Shuts down an interface.",
+      "score": 80,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet6",
+      "matched_command": "shutdown",
+      "hard_stop": false,
+      "reason": "Interface shutdown can remove connectivity."
+    },
+    {
+      "rule_id": "REMOVE_INTERFACE_IP",
+      "description": "Removes an interface IP address.",
+      "score": 85,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "routing",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet7",
+      "matched_command": "no ip address",
+      "hard_stop": false,
+      "reason": "Removing an IP address can break routing adjacencies and directly connected reachability."
+    },
+    {
+      "rule_id": "INTERFACE_SHUTDOWN",
+      "description": "Shuts down an interface.",
+      "score": 80,
+      "severity": "high",
+      "affected_areas": [
+        "interface",
+        "connectivity"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet7",
+      "matched_command": "shutdown",
+      "hard_stop": false,
+      "reason": "Interface shutdown can remove connectivity."
+    },
+    {
+      "rule_id": "ADD_STATIC_ROUTE",
+      "description": "Adds static route.",
+      "score": 45,
+      "severity": "medium",
+      "affected_areas": [
+        "routing",
+        "static_route"
+      ],
+      "context_type": "interface",
+      "context_name": "GigabitEthernet7",
+      "matched_command": "ip route 0.0.0.0 0.0.0.0 172.16.151.1",
+      "hard_stop": false,
+      "reason": "Static routes change forwarding for destination prefixes."
+    },
+    {
+      "rule_id": "VTY_ACCESS_CHANGE",
+      "description": "Changes remote management access.",
+      "score": 70,
+      "severity": "high",
+      "affected_areas": [
+        "management",
+        "ssh",
+        "remote_access"
+      ],
+      "context_type": "line_vty",
+      "context_name": "line vty 0 4",
+      "matched_command": "transport input ssh",
+      "hard_stop": false,
+      "reason": "VTY access changes can affect administrative reachability."
+    }
+  ],
+  "affected_areas": [
+    "authentication",
+    "connectivity",
+    "interface",
+    "management",
+    "remote_access",
+    "routing",
+    "security",
+    "ssh",
+    "static_route"
+  ],
+  "configuration_diff": [],
+  "summary": "Triggered deterministic rule(s): ADD_STATIC_ROUTE, ENABLE_SECRET_CHANGE, INTERFACE_IP_CHANGE, INTERFACE_SHUTDOWN, REMOVE_INTERFACE_IP, USERNAME_SECRET_CHANGE, VTY_ACCESS_CHANGE"
+}

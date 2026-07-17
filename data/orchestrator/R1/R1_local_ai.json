@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "assessment_id": "a412e4b1-db72-4352-bc51-f9004f5b49ef",
+  "generated_at": "2026-07-17T05:20:30.978344+00:00",
+  "input_sha256": "f887cc88475212bc12a6858c4450aaab5d803439ad2cf03029be832dfee506a1",
+  "risk": {
+    "score": 87,
+    "level": "critical",
+    "model_score": 87,
+    "deterministic_floor": 55,
+    "deterministic_floor_applied": false,
+    "score_source": "model"
+  },
+  "decision": {
+    "approval_required": true,
+    "auto_approval_allowed": false,
+    "recommended_action": "reject_or_senior_approval_required"
+  },
+  "change": {
+    "detected_operations": [
+      "interface_shutdown"
+    ],
+    "destructive_operations": [
+      "interface_shutdown"
+    ],
+    "affected_areas": [
+      "interface",
+      "connectivity",
+      "routing"
+    ]
+  },
+  "reason": "Shutting down this interface may break an uplink or routing adjacency based on the topology context.",
+  "retrieval_evidence": [
+    {
+      "sample_id": "HIGH_0237",
+      "category": "interface_shutdown_critical",
+      "sample_risk_score": 87,
+      "sample_risk_level": "critical",
+      "operations": [
+        "interface_shutdown"
+      ],
+      "semantic_similarity": 0.833,
+      "operation_similarity": 1.0,
+      "combined_score": 1.167
+    },
+    {
+      "sample_id": "HIGH_0281",
+      "category": "interface_shutdown_critical",
+      "sample_risk_score": 93,
+      "sample_risk_level": "critical",
+      "operations": [
+        "interface_shutdown"
+      ],
+      "semantic_similarity": 0.833,
+      "operation_similarity": 1.0,
+      "combined_score": 1.166
+    },
+    {
+      "sample_id": "LOW_0043",
+      "category": "interface_description",
+      "sample_risk_score": 9,
+      "sample_risk_level": "low",
+      "operations": [
+        "interface_description"
+      ],
+      "semantic_similarity": 0.573,
+      "operation_similarity": 0.0,
+      "combined_score": 0.286
+    }
+  ],
+  "engine_metadata": {
+    "model_file": "Qwen3-8B-Q4_K_M.gguf",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "retrieval_version": "operation-aware-v3",
+    "top_k": 3
+  }
+}

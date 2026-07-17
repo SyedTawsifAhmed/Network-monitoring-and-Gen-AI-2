@@ -199,18 +199,70 @@ def most_restrictive(*decisions: str | None) -> str:
     return max(valid, key=lambda item: DECISION_RANK[item]) if valid else "manual_review"
 
 
+def format_summary_list(items: list[str] | None, fallback: str = "None noted") -> str:
+    if not items:
+        return fallback
+    return "; ".join(str(item).strip() for item in items if str(item).strip()) or fallback
+
+
 def build_notification(result: dict[str, Any]) -> dict[str, Any]:
     level = result["risk_level"].upper()
     decision = result["decision"].replace("_", " ").title()
     title = f"[{level}] Network change decision: {decision}"
-    body = (
-        f"Final risk score: {result['final_score']}/100. "
-        f"Decision: {decision}. "
-        f"Sources: cloud={result['source_scores']['cloud_ai']}, "
-        f"local={result['source_scores']['local_ai']}, "
-        f"rules={result['source_scores']['rule_engine']}. "
-        f"Reason: {result['decision_reason']}"
+
+    cloud_reasons = format_summary_list(result["source_reasons"].get("cloud_ai", []))
+    cloud_areas = format_summary_list(result["source_affected_areas"].get("cloud_ai", []))
+    local_reasons = format_summary_list(result["source_reasons"].get("local_ai", []))
+    local_areas = format_summary_list(result["source_affected_areas"].get("local_ai", []))
+    local_destructive = format_summary_list(result["source_destructive_operations"].get("local_ai", []), fallback="None noted")
+    rule_reasons = format_summary_list(result["source_reasons"].get("rule_engine", []))
+    rule_areas = format_summary_list(result["source_affected_areas"].get("rule_engine", []))
+
+    body_lines = [
+        f"Final risk score: {result['final_score']}/100.",
+        f"Overall decision: {decision}.",
+        "",
+        "Cloud AI summary:",
+        f"  - Score: {result['source_scores']['cloud_ai']}",
+        f"  - Risk level: {result['source_levels']['cloud_ai'] or 'unknown'}",
+        f"  - Recommendation: {result['source_decision_hints']['cloud_ai'] or 'unknown'}",
+        f"  - Key findings: {cloud_reasons}",
+        f"  - Changed or affected areas: {cloud_areas}",
+        "",
+        "Local AI summary:",
+        f"  - Score: {result['source_scores']['local_ai']}",
+        f"  - Risk level: {result['source_levels']['local_ai'] or 'unknown'}",
+        f"  - Recommendation: {result['source_decision_hints']['local_ai'] or 'unknown'}",
+        f"  - Key findings: {local_reasons}",
+        f"  - Changed or affected areas: {local_areas}",
+        f"  - Destructive operations: {local_destructive}",
+        "",
+        "Rule-engine summary:",
+        f"  - Score: {result['source_scores']['rule_engine']}",
+        f"  - Risk level: {result['source_levels']['rule_engine'] or 'unknown'}",
+        f"  - Decision hint: {result['source_decision_hints']['rule_engine'] or 'none'}",
+        f"  - Findings: {rule_reasons}",
+        f"  - Affected areas: {rule_areas}",
+        "",
+        f"Aggregate affected areas: {format_summary_list(result['affected_areas'], fallback='None noted')}",
+        f"Supporting reasons: {format_summary_list(result['supporting_reasons'], fallback='No supporting reasons captured')}",
+    ]
+
+    if result.get("hard_stop_triggered"):
+        body_lines.append("Hard stop condition triggered by the rule engine.")
+
+    if result.get("destructive_operations"):
+        body_lines.append(
+            f"Destructive operations detected: {format_summary_list(result['destructive_operations'], fallback='None noted')}"
+        )
+
+    body_lines.append("")
+    body_lines.append(
+        "Notification generated from existing cloud, local, and rule-engine outputs. "
+        "No additional cloud model call was made to assemble this summary."
     )
+
+    body = "\n".join(body_lines)
     return {
         "severity": result["risk_level"],
         "title": title,
@@ -306,6 +358,9 @@ def evaluate(cloud: SourceAssessment, local: SourceAssessment, rules: SourceAsse
         "source_scores": {name: assessment.score for name, assessment in assessments.items()},
         "source_levels": {name: assessment.level for name, assessment in assessments.items()},
         "source_decision_hints": {name: assessment.decision_hint for name, assessment in assessments.items()},
+        "source_reasons": {name: assessment.reasons for name, assessment in assessments.items()},
+        "source_affected_areas": {name: assessment.affected_areas for name, assessment in assessments.items()},
+        "source_destructive_operations": {name: assessment.destructive_operations for name, assessment in assessments.items()},
         "overrides_applied": overrides,
         "hard_stop_triggered": rules.hard_stop,
         "destructive_operations": all_destructive,

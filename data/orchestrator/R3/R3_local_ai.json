@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0",
+  "assessment_id": "8110d7c1-7166-451c-bfb5-51b7b115c533",
+  "generated_at": "2026-07-17T04:41:29.671800+00:00",
+  "input_sha256": "9c777f2c8fad821219944c7884772ad6d97cb7da62896439bb2893e90372782e",
+  "risk": {
+    "score": 93,
+    "level": "critical",
+    "model_score": 93,
+    "deterministic_floor": 55,
+    "deterministic_floor_applied": false,
+    "score_source": "model"
+  },
+  "decision": {
+    "approval_required": true,
+    "auto_approval_allowed": false,
+    "recommended_action": "reject_or_senior_approval_required"
+  },
+  "change": {
+    "detected_operations": [
+      "interface_shutdown",
+      "remove_interface_ip",
+      "interface_ip_change",
+      "static_route_add"
+    ],
+    "destructive_operations": [
+      "interface_shutdown",
+      "remove_interface_ip"
+    ],
+    "affected_areas": [
+      "interface",
+      "connectivity",
+      "routing"
+    ]
+  },
+  "reason": "Shutting down these interfaces may break an uplink or routing adjacency based on the topology context.",
+  "retrieval_evidence": [
+    {
+      "sample_id": "HIGH_0281",
+      "category": "interface_shutdown_critical",
+      "sample_risk_score": 93,
+      "sample_risk_level": "critical",
+      "operations": [
+        "interface_shutdown"
+      ],
+      "semantic_similarity": 0.605,
+      "operation_similarity": 0.25,
+      "combined_score": 0.79
+    },
+    {
+      "sample_id": "HIGH_0246",
+      "category": "interface_shutdown_critical",
+      "sample_risk_score": 86,
+      "sample_risk_level": "critical",
+      "operations": [
+        "interface_shutdown"
+      ],
+      "semantic_similarity": 0.601,
+      "operation_similarity": 0.25,
+      "combined_score": 0.788
+    },
+    {
+      "sample_id": "HIGH_0229",
+      "category": "remove_interface_ip",
+      "sample_risk_score": 85,
+      "sample_risk_level": "critical",
+      "operations": [
+        "remove_interface_ip"
+      ],
+      "semantic_similarity": 0.622,
+      "operation_similarity": 0.25,
+      "combined_score": 0.598
+    }
+  ],
+  "engine_metadata": {
+    "model_file": "Qwen3-8B-Q4_K_M.gguf",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "retrieval_version": "operation-aware-v3",
+    "top_k": 3
+  }
+}
