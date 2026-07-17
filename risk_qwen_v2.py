@@ -53,7 +53,7 @@ LLAMA_THREADS = int(os.getenv("LLAMA_THREADS", "3"))
 LLAMA_BATCH_THREADS = int(os.getenv("LLAMA_BATCH_THREADS", "3"))
 LLAMA_BATCH_SIZE = int(os.getenv("LLAMA_BATCH_SIZE", "128"))
 EMBED_THREADS = int(os.getenv("EMBED_THREADS", "1"))
-GPU_LAYERS = int(os.getenv("GPU_LAYERS", "0"))  # 0 = CPU only
+GPU_LAYERS = int(os.getenv("GPU_LAYERS", "2"))  # 0 = CPU only
 RETRIEVAL_VERSION = "operation-aware-v3"
 
 # Keep PyTorch/SentenceTransformer from consuming every VM CPU.
