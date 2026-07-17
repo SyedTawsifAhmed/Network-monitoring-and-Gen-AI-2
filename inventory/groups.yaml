@@ -1,0 +1,28 @@
+---
+cisco_iosxe:
+  platform: cisco_ios
+  username: admin
+  password: admin
+  port: 22
+  connection_options:
+    netmiko:
+      extras:
+        device_type: cisco_ios
+        secret: admin
+
+cisco_ios:
+  platform: cisco_ios
+  username: admin
+  password: admin
+  port: 22
+  connection_options:
+    netmiko:
+      extras:
+        device_type: cisco_ios
+        secret: admin
+
+edge:
+  data:
+    role: edge
+
+# Expandable groups for future use

@@ -1,0 +1,49 @@
+# Created for Nornir
+---
+R1:
+  hostname: 172.16.151.233
+  groups: [cisco_iosxe]
+  data:
+    role: core
+
+R2:
+  hostname: 172.16.151.232
+  groups: [cisco_iosxe]
+  data:
+    role: edge
+
+R3:
+  hostname: 172.16.151.234
+  groups: [cisco_iosxe, edge]
+  data:
+    role: edge-right
+
+R4:
+  hostname: 172.16.151.235
+  groups: [cisco_iosxe, edge]
+  data:
+    role: edge-left
+
+R5:
+  hostname: 172.16.190.26
+  groups: [cisco_iosxe]
+  data:
+    role: core
+
+R6:
+  hostname: 172.16.190.27
+  groups: [cisco_iosxe]
+  data:
+    role: core
+
+R7:
+  hostname: 172.16.190.28
+  groups: [cisco_iosxe, edge]
+  data:
+    role: edge-right
+
+R8:
+  hostname: 172.16.190.29
+  groups: [cisco_iosxe, edge]
+  data:
+    role: edge-left
