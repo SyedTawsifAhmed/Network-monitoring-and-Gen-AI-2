@@ -562,13 +562,13 @@ class NetworkRiskAnalyzer:
         messages = [
             {
                 "role": "system",
-                "content": (
+                "content": ("/no_think\n"
                     "You are a network configuration risk analysis assistant. "
                     "Return exactly one valid JSON object. Do not expose chain "
                     "of thought, use markdown, or add text outside the JSON."
                 ),
             },
-            {"role": "user", "content": prompt},
+            {"role": "user", "content": prompt + "\n\n/no_think"},
         ]
 
         kwargs: dict[str, Any] = {
@@ -911,7 +911,7 @@ Proposed change being evaluated:
 Return exactly one JSON object matching this schema:
 {json.dumps(JSON_SCHEMA, separators=(",", ":"))}
 """
-
+    return prompt
 
 def extract_json_object(text: str) -> str:
     """Remove non-JSON text and return the outermost JSON object substring."""

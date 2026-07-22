@@ -1,0 +1,7 @@
+{
+  "ai_mode": "both",
+  "polling_seconds": 3.465,
+  "cloud_seconds": 2.082,
+  "local_seconds": 65.45,
+  "orchestrator_total_seconds": 77.42
+}
