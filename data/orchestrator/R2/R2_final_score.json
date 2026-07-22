@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-22T00:07:49.614727+00:00",
-  "final_score": 45.0,
+  "generated_at": "2026-07-22T22:15:44.272979+00:00",
+  "final_score": 35.0,
   "risk_level": "medium",
   "decision": "manual_review",
   "decision_reason": "The change has material or unclear service impact and requires operator approval.",
-  "weighted_score_before_overrides": 45.0,
+  "weighted_score_before_overrides": 18.4,
   "weights": {
     "cloud_ai": 0.25,
     "local_ai": 0.35,
@@ -12,37 +12,37 @@
   },
   "source_scores": {
     "cloud_ai": 5.0,
-    "local_ai": 85.0,
+    "local_ai": 9.0,
     "rule_engine": 35.0
   },
   "source_levels": {
     "cloud_ai": "low",
-    "local_ai": "critical",
+    "local_ai": "low",
     "rule_engine": "medium"
   },
   "source_decision_hints": {
     "cloud_ai": "approve",
-    "local_ai": "implement_strict_access_controls,_enable_encryption_for_data_in_transit,_and_conduct_regular_security_audits.",
+    "local_ai": "approve",
     "rule_engine": "manual_review"
   },
   "source_reasons": {
     "cloud_ai": [
-      "The change is purely cosmetic (documentation) and carries no functional risk.",
-      "None"
+      "The change is purely cosmetic and does not impact device functionality or routing.",
+      "None."
     ],
     "local_ai": [
-      "The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation."
+      "Changing an interface description updates documentation only and does not alter forwarding behavior."
     ],
     "rule_engine": []
   },
   "source_affected_areas": {
     "cloud_ai": [
       "Interface",
-      "None"
+      "none"
     ],
     "local_ai": [
-      "network security",
-      "data integrity"
+      "interface",
+      "documentation"
     ],
     "rule_engine": []
   },
@@ -51,24 +51,25 @@
     "local_ai": [],
     "rule_engine": []
   },
-  "overrides_applied": [],
+  "overrides_applied": [
+    "rule_engine_safety_floor"
+  ],
   "hard_stop_triggered": false,
   "destructive_operations": [],
   "affected_areas": [
     "Interface",
-    "None",
-    "network security",
-    "data integrity"
+    "none",
+    "documentation"
   ],
   "supporting_reasons": [
-    "The change is purely cosmetic (documentation) and carries no functional risk.",
-    "None",
-    "The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation."
+    "The change is purely cosmetic and does not impact device functionality or routing.",
+    "None.",
+    "Changing an interface description updates documentation only and does not alter forwarding behavior."
   ],
   "notification": {
     "severity": "medium",
     "title": "[MEDIUM] Network change decision: Manual Review",
-    "message": "Final risk score: 45.0/100.\nOverall decision: Manual Review.\n\nCloud AI summary:\n  - Score: 5.0\n  - Risk level: low\n  - Recommendation: approve\n  - Key findings: The change is purely cosmetic (documentation) and carries no functional risk.; None\n  - Changed or affected areas: Interface; None\n\nLocal AI summary:\n  - Score: 85.0\n  - Risk level: critical\n  - Recommendation: implement_strict_access_controls,_enable_encryption_for_data_in_transit,_and_conduct_regular_security_audits.\n  - Key findings: The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation.\n  - Changed or affected areas: network security; data integrity\n  - Destructive operations: None noted\n\nRule-engine summary:\n  - Score: 35.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Interface; None; network security; data integrity\nSupporting reasons: The change is purely cosmetic (documentation) and carries no functional risk.; None; The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation.\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
+    "message": "Final risk score: 35.0/100.\nOverall decision: Manual Review.\n\nCloud AI summary:\n  - Score: 5.0\n  - Risk level: low\n  - Recommendation: approve\n  - Key findings: The change is purely cosmetic and does not impact device functionality or routing.; None.\n  - Changed or affected areas: Interface; none\n\nLocal AI summary:\n  - Score: 9.0\n  - Risk level: low\n  - Recommendation: approve\n  - Key findings: Changing an interface description updates documentation only and does not alter forwarding behavior.\n  - Changed or affected areas: interface; documentation\n  - Destructive operations: None noted\n\nRule-engine summary:\n  - Score: 35.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Interface; none; documentation\nSupporting reasons: The change is purely cosmetic and does not impact device functionality or routing.; None.; Changing an interface description updates documentation only and does not alter forwarding behavior.\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
     "requires_acknowledgement": true
   },
   "notification_delivery": {

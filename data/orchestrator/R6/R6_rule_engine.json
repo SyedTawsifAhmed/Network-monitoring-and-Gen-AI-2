@@ -111,6 +111,6 @@
   "engine_version": "2.0.0",
   "ruleset_version": "ios-risk-rules-2026.07",
   "policy_profile": "enterprise_network_default",
-  "evaluated_at": "2026-07-22T00:10:03.188130+00:00",
+  "evaluated_at": "2026-07-22T22:15:44.583777+00:00",
   "input_sha256": "2d2d8b6cc8ac59980a07dccda5e60fb1c21495495f71a14feb9a8c61079cb1c4"
 }

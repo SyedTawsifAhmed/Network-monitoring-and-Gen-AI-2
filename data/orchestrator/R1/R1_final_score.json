@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-22T00:49:08.819499+00:00",
-  "final_score": 44.5,
-  "risk_level": "medium",
-  "decision": "manual_review",
-  "decision_reason": "The change has material or unclear service impact and requires operator approval.",
-  "weighted_score_before_overrides": 44.5,
+  "generated_at": "2026-07-22T22:14:42.018359+00:00",
+  "final_score": 81.0,
+  "risk_level": "critical",
+  "decision": "deny",
+  "decision_reason": "A destructive operation was identified and the combined assessment reached critical risk.",
+  "weighted_score_before_overrides": 57.8,
   "weights": {
     "cloud_ai": 0.25,
     "local_ai": 0.35,
@@ -12,66 +12,71 @@
   },
   "source_scores": {
     "cloud_ai": 45.0,
-    "local_ai": 55.0,
+    "local_ai": 93.0,
     "rule_engine": 35.0
   },
   "source_levels": {
     "cloud_ai": "medium",
-    "local_ai": "high",
+    "local_ai": "critical",
     "rule_engine": "medium"
   },
   "source_decision_hints": {
     "cloud_ai": "manual_review",
-    "local_ai": "warn",
+    "local_ai": "reject_or_senior_approval_required",
     "rule_engine": "manual_review"
   },
   "source_reasons": {
     "cloud_ai": [
-      "Enabling an interface on a core router can trigger unexpected routing adjacencies or traffic shifts. The impact is uncertain without knowing the current state of the peer device R3.",
-      "Potential for new routing adjacencies to form or traffic to begin flowing over the link to R3. Impact is uncertain."
+      "Disabling an interface connected to a core routing peer can cause routing instability or partition the network.",
+      "Loss of connectivity to R3 and potential routing convergence events."
     ],
     "local_ai": [
-      "Changing interface addressing can affect directly connected reachability and routing adjacencies."
+      "Shutting down this interface may break an uplink or routing adjacency based on the topology context."
     ],
     "rule_engine": []
   },
   "source_affected_areas": {
     "cloud_ai": [
       "Interface",
-      "routing reachability",
-      "user traffic"
+      "routing",
+      "internal connectivity"
     ],
     "local_ai": [
       "interface",
-      "routing",
-      "connectivity"
+      "connectivity",
+      "routing"
     ],
     "rule_engine": []
   },
   "source_destructive_operations": {
     "cloud_ai": [],
-    "local_ai": [],
+    "local_ai": [
+      "interface_shutdown"
+    ],
     "rule_engine": []
   },
-  "overrides_applied": [],
+  "overrides_applied": [
+    "critical_destructive_change_floor"
+  ],
   "hard_stop_triggered": false,
-  "destructive_operations": [],
+  "destructive_operations": [
+    "interface_shutdown"
+  ],
   "affected_areas": [
     "Interface",
-    "routing reachability",
-    "user traffic",
     "routing",
+    "internal connectivity",
     "connectivity"
   ],
   "supporting_reasons": [
-    "Enabling an interface on a core router can trigger unexpected routing adjacencies or traffic shifts. The impact is uncertain without knowing the current state of the peer device R3.",
-    "Potential for new routing adjacencies to form or traffic to begin flowing over the link to R3. Impact is uncertain.",
-    "Changing interface addressing can affect directly connected reachability and routing adjacencies."
+    "Disabling an interface connected to a core routing peer can cause routing instability or partition the network.",
+    "Loss of connectivity to R3 and potential routing convergence events.",
+    "Shutting down this interface may break an uplink or routing adjacency based on the topology context."
   ],
   "notification": {
-    "severity": "medium",
-    "title": "[MEDIUM] Network change decision: Manual Review",
-    "message": "Final risk score: 44.5/100.\nOverall decision: Manual Review.\n\nCloud AI summary:\n  - Score: 45.0\n  - Risk level: medium\n  - Recommendation: manual_review\n  - Key findings: Enabling an interface on a core router can trigger unexpected routing adjacencies or traffic shifts. The impact is uncertain without knowing the current state of the peer device R3.; Potential for new routing adjacencies to form or traffic to begin flowing over the link to R3. Impact is uncertain.\n  - Changed or affected areas: Interface; routing reachability; user traffic\n\nLocal AI summary:\n  - Score: 55.0\n  - Risk level: high\n  - Recommendation: warn\n  - Key findings: Changing interface addressing can affect directly connected reachability and routing adjacencies.\n  - Changed or affected areas: interface; routing; connectivity\n  - Destructive operations: None noted\n\nRule-engine summary:\n  - Score: 35.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Interface; routing reachability; user traffic; routing; connectivity\nSupporting reasons: Enabling an interface on a core router can trigger unexpected routing adjacencies or traffic shifts. The impact is uncertain without knowing the current state of the peer device R3.; Potential for new routing adjacencies to form or traffic to begin flowing over the link to R3. Impact is uncertain.; Changing interface addressing can affect directly connected reachability and routing adjacencies.\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
+    "severity": "critical",
+    "title": "[CRITICAL] Network change decision: Deny",
+    "message": "Final risk score: 81.0/100.\nOverall decision: Deny.\n\nCloud AI summary:\n  - Score: 45.0\n  - Risk level: medium\n  - Recommendation: manual_review\n  - Key findings: Disabling an interface connected to a core routing peer can cause routing instability or partition the network.; Loss of connectivity to R3 and potential routing convergence events.\n  - Changed or affected areas: Interface; routing; internal connectivity\n\nLocal AI summary:\n  - Score: 93.0\n  - Risk level: critical\n  - Recommendation: reject_or_senior_approval_required\n  - Key findings: Shutting down this interface may break an uplink or routing adjacency based on the topology context.\n  - Changed or affected areas: interface; connectivity; routing\n  - Destructive operations: interface_shutdown\n\nRule-engine summary:\n  - Score: 35.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Interface; routing; internal connectivity; connectivity\nSupporting reasons: Disabling an interface connected to a core routing peer can cause routing instability or partition the network.; Loss of connectivity to R3 and potential routing convergence events.; Shutting down this interface may break an uplink or routing adjacency based on the topology context.\nDestructive operations detected: interface_shutdown\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
     "requires_acknowledgement": true
   },
   "notification_delivery": {

@@ -1,11 +1,11 @@
 {
-  "headline": "Interface GigabitEthernet3 enabled",
-  "executive_summary": "The GigabitEthernet3 interface on R1 has been administratively enabled. This interface is connected to an internal routing peer (R3). As this interface was previously shut down, enabling it may initiate routing protocol adjacencies or traffic flow that was previously blocked.",
-  "technical_summary": "Removed 'shutdown' command from interface GigabitEthernet3. The interface is now administratively up.",
+  "headline": "Interface Shutdown on GigabitEthernet3",
+  "executive_summary": "The core router R1 has been configured to shut down interface GigabitEthernet3. This interface is designated as an internal routing peer connection to R3. This action will likely disrupt any existing or future routing adjacencies with R3.",
+  "technical_summary": "Interface GigabitEthernet3 on R1 was set to 'shutdown'. This will terminate any L2/L3 connectivity to neighbor R3.",
   "change_type": "Interface Change",
   "affected_services": [
-    "routing reachability",
-    "user traffic"
+    "routing",
+    "internal connectivity"
   ],
   "changed_areas": [
     "Interface"
@@ -13,17 +13,16 @@
   "risk_level": "Medium",
   "risk_score": 45,
   "decision_recommendation": "Manual Review",
-  "risk_reason": "Enabling an interface on a core router can trigger unexpected routing adjacencies or traffic shifts. The impact is uncertain without knowing the current state of the peer device R3.",
-  "potential_impact": "Potential for new routing adjacencies to form or traffic to begin flowing over the link to R3. Impact is uncertain.",
+  "risk_reason": "Disabling an interface connected to a core routing peer can cause routing instability or partition the network.",
+  "potential_impact": "Loss of connectivity to R3 and potential routing convergence events.",
   "validation_checks": [
     "show ip interface brief",
-    "show interfaces GigabitEthernet3",
     "show ip protocols",
     "show ip route"
   ],
-  "recommended_action": "Verify the status of the peer device R3 and ensure that enabling this link is intended and does not cause routing loops or congestion.",
-  "rollback_recommendation": "If unexpected traffic patterns or routing issues occur, re-apply the 'shutdown' command to interface GigabitEthernet3.",
+  "recommended_action": "Verify if the shutdown of Gi3 was intentional for maintenance or decommissioning.",
+  "rollback_recommendation": "If connectivity to R3 is required, execute 'no shutdown' on interface GigabitEthernet3.",
   "anomalies": [
-    "Log indicates an invalid input error, which may suggest a partial or failed configuration attempt despite the diff showing a successful removal of the shutdown command."
+    "% Invalid input detected at '^' marker in logs"
   ]
 }

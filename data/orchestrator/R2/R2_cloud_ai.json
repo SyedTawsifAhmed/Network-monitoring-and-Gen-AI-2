@@ -1,10 +1,10 @@
 {
-  "headline": "Interface Description Added",
-  "executive_summary": "A description was added to the external interface GigabitEthernet1 on device R2. This is a documentation change and does not impact traffic flow or routing.",
-  "technical_summary": "Added 'description external' to interface GigabitEthernet1.",
+  "headline": "Interface Description Change",
+  "executive_summary": "The description for interface GigabitEthernet1 on R2 was updated from 'external' to 'ext'. This is a cosmetic change and does not affect the operational state or traffic forwarding of the device.",
+  "technical_summary": "Modified description string on GigabitEthernet1.",
   "change_type": "Interface Change",
   "affected_services": [
-    "None"
+    "none"
   ],
   "changed_areas": [
     "Interface"
@@ -12,14 +12,14 @@
   "risk_level": "Low",
   "risk_score": 5,
   "decision_recommendation": "Approve",
-  "risk_reason": "The change is purely cosmetic (documentation) and carries no functional risk.",
-  "potential_impact": "None",
+  "risk_reason": "The change is purely cosmetic and does not impact device functionality or routing.",
+  "potential_impact": "None.",
   "validation_checks": [
-    "show running-config interface GigabitEthernet1"
+    "show interface GigabitEthernet1"
   ],
-  "recommended_action": "Verify the description is correct.",
-  "rollback_recommendation": "Remove the description if it is incorrect.",
+  "recommended_action": "None.",
+  "rollback_recommendation": "Not required.",
   "anomalies": [
-    "Invalid input log detected, likely due to a syntax error during the configuration attempt."
+    "% Invalid input detected at '^' marker in logs"
   ]
 }

@@ -1,20 +1,20 @@
 {
   "schema_version": "1.0",
-  "assessment_id": "00bffb5c-80b5-4581-9105-d1acc2224c93",
-  "generated_at": "2026-07-22T00:07:47.689916+00:00",
-  "input_sha256": "b8c85bfe20a98227c1d4c44d57c96aa1bebb3534b784c793904d050b5f4384e8",
+  "assessment_id": "81080966-037d-4e3a-8871-c9ed5372b48a",
+  "generated_at": "2026-07-22T22:15:42.306681+00:00",
+  "input_sha256": "36488e48179440440a8f1def0fcdd78a034c9d6c1531f79e24ee18d0b2b4e3cc",
   "risk": {
-    "score": 85,
-    "level": "critical",
-    "model_score": 85,
+    "score": 9,
+    "level": "low",
+    "model_score": 9,
     "deterministic_floor": 0,
     "deterministic_floor_applied": false,
     "score_source": "model"
   },
   "decision": {
-    "approval_required": true,
-    "auto_approval_allowed": false,
-    "recommended_action": "Implement strict access controls, enable encryption for data in transit, and conduct regular security audits."
+    "approval_required": false,
+    "auto_approval_allowed": true,
+    "recommended_action": "approve"
   },
   "change": {
     "detected_operations": [
@@ -22,11 +22,11 @@
     ],
     "destructive_operations": [],
     "affected_areas": [
-      "network security",
-      "data integrity"
+      "interface",
+      "documentation"
     ]
   },
-  "reason": "The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation.",
+  "reason": "Changing an interface description updates documentation only and does not alter forwarding behavior.",
   "retrieval_evidence": [
     {
       "sample_id": "LOW_0043",
@@ -36,9 +36,9 @@
       "operations": [
         "interface_description"
       ],
-      "semantic_similarity": 0.774,
+      "semantic_similarity": 0.778,
       "operation_similarity": 1.0,
-      "combined_score": 0.937
+      "combined_score": 0.939
     },
     {
       "sample_id": "LOW_0028",
@@ -48,9 +48,9 @@
       "operations": [
         "interface_description"
       ],
-      "semantic_similarity": 0.771,
+      "semantic_similarity": 0.776,
       "operation_similarity": 1.0,
-      "combined_score": 0.935
+      "combined_score": 0.938
     },
     {
       "sample_id": "MEDIUM_0089",
@@ -60,9 +60,9 @@
       "operations": [
         "interface_ip_change"
       ],
-      "semantic_similarity": 0.689,
+      "semantic_similarity": 0.691,
       "operation_similarity": 0.0,
-      "combined_score": 0.345
+      "combined_score": 0.346
     }
   ],
   "engine_metadata": {

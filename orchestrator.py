@@ -209,6 +209,8 @@ def main():
         print("No diff files found; nothing to do.")
         return
 
+    pending_notifications: List[dict] = []
+
     for diff_file in latest_diffs:
         device_name = diff_file.stem.split("_")[0]
         if args.device and device_name != args.device:
@@ -357,30 +359,38 @@ def main():
             print(f"Scoring engine failed for {device_name}: {exc}")
             continue
 
-        # 6) Email notification: use the combined summary from scoring output
+        # 6) Queue notification data — email will be sent once after the loop
         try:
             notification_data = json.loads(final_out.read_text(encoding="utf-8"))
             notification = notification_data.get("notification")
             if notification:
-                subject = notification.get("title", f"Network change decision for {device_name}")
-                body = notification.get("message", "No notification body available.")
-                event = {
+                pending_notifications.append({
                     "device_name": device_name,
-                    "device_role": hosts.get(device_name, {}).get("data", {}).get("role", "unknown"),
-                    "platform": topology.get("devices", {}).get(device_name, {}).get("platform", "unknown"),
-                    "timestamp": notification_data.get("generated_at", "unknown"),
-                    "diff_file": str(diff_file),
-                    "archive_file": "",
-                }
-                sent = send_combined_email_notifications(settings, event, subject, body)
-                if sent:
-                    print(f"Combined email notification sent for {device_name}")
-                else:
-                    print(f"Email notifications disabled or no recipients configured for {device_name}")
+                    "subject": notification.get("title", f"Network change decision for {device_name}"),
+                    "body": notification.get("message", "No notification body available."),
+                })
+                print(f"Queued email notification for {device_name}")
             else:
                 print(f"No notification payload in final score output for {device_name}")
         except Exception as exc:
-            print(f"Failed sending combined email notification for {device_name}: {exc}")
+            print(f"Failed queuing email notification for {device_name}: {exc}")
+
+    # 7) Send a single combined email for all changed devices
+    if pending_notifications:
+        num = len(pending_notifications)
+        device_list = ", ".join(n["device_name"] for n in pending_notifications)
+        combined_subject = f"[NetConfig AI] Network changes detected on {num} device(s): {device_list}"
+        combined_body = "\n\n".join(
+            f"=== {n['device_name']} ===\n{n['body']}" for n in pending_notifications
+        )
+        try:
+            sent = send_combined_email_notifications(settings, {}, combined_subject, combined_body)
+            if sent:
+                print(f"Combined email notification sent for {num} device(s): {device_list}")
+            else:
+                print("Email notifications disabled or no recipients configured.")
+        except Exception as exc:
+            print(f"Failed sending combined email notification: {exc}")
 
     telemetry["orchestrator_total_seconds"] = round(time.perf_counter() - orchestrator_started_at, 3)
     metrics_path = persist_metrics(telemetry, Path("data/telemetry"))
