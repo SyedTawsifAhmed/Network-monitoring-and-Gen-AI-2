@@ -1,85 +1,74 @@
 {
-  "generated_at": "2026-07-17T05:33:19.980525+00:00",
-  "final_score": 81.0,
-  "risk_level": "critical",
-  "decision": "deny",
-  "decision_reason": "A destructive operation was identified and the combined assessment reached critical risk.",
-  "weighted_score_before_overrides": 46.3,
+  "generated_at": "2026-07-22T00:07:49.614727+00:00",
+  "final_score": 45.0,
+  "risk_level": "medium",
+  "decision": "manual_review",
+  "decision_reason": "The change has material or unclear service impact and requires operator approval.",
+  "weighted_score_before_overrides": 45.0,
   "weights": {
     "cloud_ai": 0.25,
     "local_ai": 0.35,
     "rule_engine": 0.4
   },
   "source_scores": {
-    "cloud_ai": 55.0,
-    "local_ai": 93.0,
-    "rule_engine": 0.0
+    "cloud_ai": 5.0,
+    "local_ai": 85.0,
+    "rule_engine": 35.0
   },
   "source_levels": {
-    "cloud_ai": "medium",
+    "cloud_ai": "low",
     "local_ai": "critical",
-    "rule_engine": "low"
+    "rule_engine": "medium"
   },
   "source_decision_hints": {
-    "cloud_ai": "manual_review",
-    "local_ai": "reject_or_senior_approval_required",
-    "rule_engine": "approve"
+    "cloud_ai": "approve",
+    "local_ai": "implement_strict_access_controls,_enable_encryption_for_data_in_transit,_and_conduct_regular_security_audits.",
+    "rule_engine": "manual_review"
   },
   "source_reasons": {
     "cloud_ai": [
-      "Administrative shutdown of interfaces connected to active neighbors R1 and R3, combined with an unexplained CLI syntax error in the execution logs.",
-      "Disruption of physical and logical connectivity to neighboring routers R1 and R3, preventing any future routing or traffic exchange over these links."
+      "The change is purely cosmetic (documentation) and carries no functional risk.",
+      "None"
     ],
     "local_ai": [
-      "Shutting down this interface may break an uplink or routing adjacency based on the topology context."
+      "The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation."
     ],
     "rule_engine": []
   },
   "source_affected_areas": {
     "cloud_ai": [
       "Interface",
-      "Internal Routing",
-      "Lateral Routing",
-      "Neighbor Connectivity"
+      "None"
     ],
     "local_ai": [
-      "interface",
-      "connectivity",
-      "routing"
+      "network security",
+      "data integrity"
     ],
     "rule_engine": []
   },
   "source_destructive_operations": {
     "cloud_ai": [],
-    "local_ai": [
-      "interface_shutdown"
-    ],
+    "local_ai": [],
     "rule_engine": []
   },
-  "overrides_applied": [
-    "critical_destructive_change_floor"
-  ],
+  "overrides_applied": [],
   "hard_stop_triggered": false,
-  "destructive_operations": [
-    "interface_shutdown"
-  ],
+  "destructive_operations": [],
   "affected_areas": [
     "Interface",
-    "Internal Routing",
-    "Lateral Routing",
-    "Neighbor Connectivity",
-    "connectivity",
-    "routing"
+    "None",
+    "network security",
+    "data integrity"
   ],
   "supporting_reasons": [
-    "Administrative shutdown of interfaces connected to active neighbors R1 and R3, combined with an unexplained CLI syntax error in the execution logs.",
-    "Disruption of physical and logical connectivity to neighboring routers R1 and R3, preventing any future routing or traffic exchange over these links.",
-    "Shutting down this interface may break an uplink or routing adjacency based on the topology context."
+    "The change is purely cosmetic (documentation) and carries no functional risk.",
+    "None",
+    "The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation."
   ],
   "notification": {
-    "severity": "critical",
-    "title": "[CRITICAL] Network change decision: Deny",
-    "message": "Final risk score: 81.0/100.\nOverall decision: Deny.\n\nCloud AI summary:\n  - Score: 55.0\n  - Risk level: medium\n  - Recommendation: manual_review\n  - Key findings: Administrative shutdown of interfaces connected to active neighbors R1 and R3, combined with an unexplained CLI syntax error in the execution logs.; Disruption of physical and logical connectivity to neighboring routers R1 and R3, preventing any future routing or traffic exchange over these links.\n  - Changed or affected areas: Interface; Internal Routing; Lateral Routing; Neighbor Connectivity\n\nLocal AI summary:\n  - Score: 93.0\n  - Risk level: critical\n  - Recommendation: reject_or_senior_approval_required\n  - Key findings: Shutting down this interface may break an uplink or routing adjacency based on the topology context.\n  - Changed or affected areas: interface; connectivity; routing\n  - Destructive operations: interface_shutdown\n\nRule-engine summary:\n  - Score: 0.0\n  - Risk level: low\n  - Decision hint: approve\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Interface; Internal Routing; Lateral Routing; Neighbor Connectivity; connectivity; routing\nSupporting reasons: Administrative shutdown of interfaces connected to active neighbors R1 and R3, combined with an unexplained CLI syntax error in the execution logs.; Disruption of physical and logical connectivity to neighboring routers R1 and R3, preventing any future routing or traffic exchange over these links.; Shutting down this interface may break an uplink or routing adjacency based on the topology context.\nDestructive operations detected: interface_shutdown\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
+    "severity": "medium",
+    "title": "[MEDIUM] Network change decision: Manual Review",
+    "message": "Final risk score: 45.0/100.\nOverall decision: Manual Review.\n\nCloud AI summary:\n  - Score: 5.0\n  - Risk level: low\n  - Recommendation: approve\n  - Key findings: The change is purely cosmetic (documentation) and carries no functional risk.; None\n  - Changed or affected areas: Interface; None\n\nLocal AI summary:\n  - Score: 85.0\n  - Risk level: critical\n  - Recommendation: implement_strict_access_controls,_enable_encryption_for_data_in_transit,_and_conduct_regular_security_audits.\n  - Key findings: The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation.\n  - Changed or affected areas: network security; data integrity\n  - Destructive operations: None noted\n\nRule-engine summary:\n  - Score: 35.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Interface; None; network security; data integrity\nSupporting reasons: The change is purely cosmetic (documentation) and carries no functional risk.; None; The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation.\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
     "requires_acknowledgement": true
   },
   "notification_delivery": {

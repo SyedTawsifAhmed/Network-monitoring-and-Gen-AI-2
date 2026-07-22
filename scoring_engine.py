@@ -373,8 +373,8 @@ def evaluate(cloud: SourceAssessment, local: SourceAssessment, rules: SourceAsse
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cloud", type=Path, required=True, help="Cloud AI JSON output")
-    parser.add_argument("--local", type=Path, required=True, help="Local AI JSON output")
+    parser.add_argument("--cloud", type=Path, default=None, help="Cloud AI JSON output")
+    parser.add_argument("--local", type=Path, default=None, help="Local AI JSON output")
     parser.add_argument("--rules", type=Path, required=True, help="Rule-engine JSON output")
     parser.add_argument("--output", type=Path, default=Path("final_score_output.json"))
     parser.add_argument("--no-notify", action="store_true", help="Do not print or send a notification")
@@ -384,10 +384,37 @@ def parse_arguments() -> argparse.Namespace:
 def main() -> int:
     args = parse_arguments()
     try:
+        cloud_input = load_json(args.cloud) if args.cloud else None
+        local_input = load_json(args.local) if args.local else None
+        rules_input = load_json(args.rules)
+
+        cloud_assessment = parse_cloud(cloud_input) if cloud_input else None
+        local_assessment = parse_local(local_input) if local_input else None
+        rules_assessment = parse_rules(rules_input)
+
+        if cloud_assessment is None and local_assessment is None:
+            raise ValueError("At least one of --cloud or --local must be provided")
+
         result = evaluate(
-            parse_cloud(load_json(args.cloud)),
-            parse_local(load_json(args.local)),
-            parse_rules(load_json(args.rules)),
+            cloud_assessment or SourceAssessment(
+                name="cloud_ai",
+                score=0.0,
+                level="low",
+                decision_hint="approve",
+                reasons=[],
+                affected_areas=[],
+                destructive_operations=[],
+            ),
+            local_assessment or SourceAssessment(
+                name="local_ai",
+                score=0.0,
+                level="low",
+                decision_hint="approve",
+                reasons=[],
+                affected_areas=[],
+                destructive_operations=[],
+            ),
+            rules_assessment,
         )
         if not args.no_notify:
             result["notification_delivery"] = send_notification(result["notification"])

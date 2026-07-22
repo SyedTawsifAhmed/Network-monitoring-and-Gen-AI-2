@@ -22,16 +22,17 @@
   "rollback_actions": [],
   "recognized_commands": 0,
   "unrecognized_commands": [
-    "Current configuration : 4002 bytes"
+    "Current configuration : 4047 bytes",
+    "description external"
   ],
   "configuration_diff": [
     "--- current",
     "+++ proposed",
-    "@@ -1,198 +1,2 @@",
+    "@@ -1,199 +1,3 @@",
     "-Building configuration...",
-    " Current configuration : 4002 bytes",
+    " Current configuration : 4047 bytes",
     "-!",
-    " ! Last configuration change at 14:24:27 UTC Fri Jul 17 2026",
+    " ! Last configuration change at 00:02:28 UTC Wed Jul 22 2026",
     "-!",
     "-version 17.3",
     "-service timestamps debug datetime msec",
@@ -110,6 +111,6 @@
   "engine_version": "2.0.0",
   "ruleset_version": "ios-risk-rules-2026.07",
   "policy_profile": "enterprise_network_default",
-  "evaluated_at": "2026-07-17T14:27:13.378149+00:00",
-  "input_sha256": "e6bfdfd2cb09ae1b63b80c63ce1f5e123fe1de1351b688e1d2d681e807dfe22f"
+  "evaluated_at": "2026-07-22T00:06:33.331963+00:00",
+  "input_sha256": "c3fc9a4c50d4b566b42ad6305344eb41781c53f466d1fe75cb753deacf7f4b1b"
 }

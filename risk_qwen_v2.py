@@ -53,8 +53,9 @@ LLAMA_THREADS = int(os.getenv("LLAMA_THREADS", "3"))
 LLAMA_BATCH_THREADS = int(os.getenv("LLAMA_BATCH_THREADS", "3"))
 LLAMA_BATCH_SIZE = int(os.getenv("LLAMA_BATCH_SIZE", "128"))
 EMBED_THREADS = int(os.getenv("EMBED_THREADS", "1"))
-GPU_LAYERS = int(os.getenv("GPU_LAYERS", "2"))  # 0 = CPU only
+GPU_LAYERS = int(os.getenv("GPU_LAYERS", "1"))  # 0 = CPU only
 RETRIEVAL_VERSION = "operation-aware-v3"
+CHAT_FORMAT = os.getenv("CHAT_FORMAT", "chatml")
 
 # Keep PyTorch/SentenceTransformer from consuming every VM CPU.
 torch.set_num_threads(max(1, EMBED_THREADS))
@@ -345,6 +346,7 @@ class NetworkRiskAnalyzer:
             n_threads_batch=LLAMA_BATCH_THREADS,
             n_batch=LLAMA_BATCH_SIZE,
             n_gpu_layers=GPU_LAYERS,
+            chat_format=CHAT_FORMAT,
             use_mmap=True,
             use_mlock=False,
             logits_all=False,

@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from pathlib import Path
 from typing import List, Literal, Optional
 
@@ -290,6 +291,24 @@ def save_batch_analysis_result(
         )
 
 
+def persist_cloud_telemetry(seconds: float) -> Path:
+    telemetry_dir = Path("data/telemetry")
+    telemetry_dir.mkdir(parents=True, exist_ok=True)
+    metrics_path = telemetry_dir / "cloud_ai_metrics.json"
+    payload = {"cloud_seconds": round(seconds, 3)}
+    if metrics_path.exists():
+        try:
+            existing = json.loads(metrics_path.read_text(encoding="utf-8"))
+            if isinstance(existing, dict):
+                existing.setdefault("cloud_seconds", 0.0)
+                existing["cloud_seconds"] = round(existing.get("cloud_seconds", 0.0) + seconds, 3)
+                payload = existing
+        except Exception:
+            pass
+    metrics_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return metrics_path
+
+
 def analyze_change(
     settings: dict,
     payload: dict,
@@ -302,29 +321,38 @@ def analyze_change(
     client = get_gemini_client(api_env_var)
     prompt = build_prompt(payload)
 
-    response = client.models.generate_content(
-        model=model_name,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=temperature,
-            max_output_tokens=1000,
-            response_mime_type="application/json",
-            response_json_schema=ChangeSummary.model_json_schema(),
-        ),
-    )
-
-    if not response.text:
-        raise ValueError("Gemini returned an empty response.")
-
-    result = ChangeSummary.model_validate_json(response.text)
-
-    if output_file:
-        save_analysis_result(
-            result=result,
-            output_file=output_file,
+    try:
+        started_at = time.perf_counter()
+        response = client.models.generate_content(
+            model=model_name,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=temperature,
+                max_output_tokens=1000,
+                response_mime_type="application/json",
+                response_json_schema=ChangeSummary.model_json_schema(),
+            ),
         )
 
-    return result
+        if not response.text:
+            raise ValueError("Gemini returned an empty response.")
+
+        elapsed = round(time.perf_counter() - started_at, 3)
+        print(f"[+] Cloud AI API response time: {elapsed}s")
+        persist_cloud_telemetry(elapsed)
+
+        result = ChangeSummary.model_validate_json(response.text)
+
+        if output_file:
+            save_analysis_result(
+                result=result,
+                output_file=output_file,
+            )
+
+        return result
+    except Exception as e:
+        print(f"[!] Error during cloud AI analysis: {e}")
+        return None
 
 
 def analyze_changes_batch(
@@ -339,30 +367,38 @@ def analyze_changes_batch(
     client = get_gemini_client(api_env_var)
     prompt = build_batch_prompt(payloads)
 
-    response = client.models.generate_content(
-        model=model_name,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=temperature,
-            max_output_tokens=4000,
-            response_mime_type="application/json",
-            response_json_schema=BatchChangeAnalysis.model_json_schema(),
-        ),
-    )
-
-    if not response.text:
-        raise ValueError("Gemini returned an empty response.")
-
-    result = BatchChangeAnalysis.model_validate_json(response.text)
-
-    if output_file:
-        save_batch_analysis_result(
-            result=result,
-            output_file=output_file,
+    try:
+        started_at = time.perf_counter()
+        response = client.models.generate_content(
+            model=model_name,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=temperature,
+                max_output_tokens=4000,
+                response_mime_type="application/json",
+                response_json_schema=BatchChangeAnalysis.model_json_schema(),
+            ),
         )
 
-    return result
+        if not response.text:
+            raise ValueError("Gemini returned an empty response.")
 
+        elapsed = round(time.perf_counter() - started_at, 3)
+        print(f"[+] Cloud AI API response time: {elapsed}s")
+        persist_cloud_telemetry(elapsed)
+
+        result = BatchChangeAnalysis.model_validate_json(response.text)
+
+        if output_file:
+            save_batch_analysis_result(
+                result=result,
+                output_file=output_file,
+            )
+
+        return result
+    except Exception as e:
+        print(f"[!] Error during cloud AI batch analysis: {e}")
+        return BatchChangeAnalysis(results=[])
 
 def estimate_payload_size(payload: dict) -> int:
     return len(json.dumps(payload, ensure_ascii=False))

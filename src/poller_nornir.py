@@ -1,6 +1,8 @@
 from datetime import datetime
 import argparse
+import json
 import subprocess
+import time
 
 from utils import load_yaml, load_json, ensure_dir, write_text, read_text
 from collector_nornir import collect_device_data_parallel
@@ -99,6 +101,25 @@ def load_nornir_host_roles(hosts_path):
     return role_map
 
 
+def persist_poller_metrics(polling_seconds: float) -> Path:
+    telemetry_dir = Path("data/telemetry")
+    telemetry_dir.mkdir(parents=True, exist_ok=True)
+    metrics_path = telemetry_dir / "poller_metrics.json"
+    payload = {"polling_seconds": round(polling_seconds, 3)}
+
+    cloud_metrics_path = telemetry_dir / "cloud_ai_metrics.json"
+    if cloud_metrics_path.exists():
+        try:
+            cloud_metrics = json.loads(cloud_metrics_path.read_text(encoding="utf-8"))
+            if isinstance(cloud_metrics, dict):
+                payload["cloud_seconds"] = cloud_metrics.get("cloud_seconds")
+        except Exception:
+            pass
+
+    metrics_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return metrics_path
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Poll network devices and optionally analyze config changes.")
     parser.add_argument(
@@ -111,7 +132,15 @@ def parse_args():
         action="store_true",
         help="Skip sending email notifications from the poller. Useful when orchestration will send combined notifications later.",
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--ai-mode",
+        choices=["cloud", "local"],
+        default=None,
+        help="Run only the cloud AI path or only the local AI path. Defaults to running both.",
+    )
+    args = parser.parse_args()
+    args.ai_mode = args.ai_mode or "both"
+    return args
 
 
 def main():
@@ -138,6 +167,7 @@ def main():
 
     print(f"[+] Polling {len(host_metadata)} devices with Nornir ({num_workers} workers)...")
 
+    polling_started_at = time.perf_counter()
     all_collected, failures = collect_device_data_parallel(
         config_cmd=config_cmd,
         logs_cmd=logs_cmd,
@@ -148,6 +178,8 @@ def main():
     )
 
     print(f"[+] Collection complete. Successful: {len(all_collected)}, Failed: {len(failures)}")
+    polling_elapsed = round(time.perf_counter() - polling_started_at, 3)
+    print(f"[+] Polling elapsed: {polling_elapsed}s")
 
     for device_name, errors in failures.items():
         print(f"[!] Poll failed for {device_name}")
@@ -206,6 +238,11 @@ def main():
 
     if not changed_devices:
         print("[+] No changed devices to analyze.")
+        return
+
+    if args.ai_mode == "local":
+        print("[+] AI mode 'local' selected. Skipping cloud AI analysis and notifications.")
+        persist_poller_metrics(polling_elapsed)
         return
 
     ai_payloads = []

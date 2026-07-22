@@ -11,6 +11,7 @@ import argparse
 import json
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import List, Optional
 
@@ -34,9 +35,30 @@ def run_git_show(path: Path) -> Optional[str]:
     return None
 
 
-def run_cmd(cmd: List[str]) -> None:
+def run_cmd(cmd: List[str], allow_failure: bool = False) -> int:
     print(f"Running: {' '.join(cmd)}")
-    subprocess.run(cmd, check=True)
+    result = subprocess.run(cmd, check=False)
+    if result.returncode != 0 and not allow_failure:
+        raise subprocess.CalledProcessError(result.returncode, cmd)
+    return result.returncode
+
+
+def persist_metrics(metrics: dict, output_dir: Path) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    metrics_path = output_dir / f"orchestrator_metrics_{timestamp}.json"
+    metrics_path.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+    return metrics_path
+
+
+def load_existing_metrics(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
 
 
 def parse_args():
@@ -48,7 +70,15 @@ def parse_args():
         action="store_true",
         help="Force re-run local/cloud/scoring even if outputs already exist.",
     )
-    return p.parse_args()
+    p.add_argument(
+        "--ai-mode",
+        choices=["cloud", "local"],
+        default=None,
+        help="Run only the cloud AI path or only the local AI path. Defaults to running both.",
+    )
+    args = p.parse_args()
+    args.ai_mode = args.ai_mode or "both"
+    return args
 
 
 def should_run_output(path: Path, force: bool, source: Optional[Path] = None) -> bool:
@@ -121,6 +151,14 @@ def build_topology_context(device_name: str, topology: dict) -> str:
 def main():
     args = parse_args()
     settings = load_yaml("configs/settings.yaml")
+    orchestrator_started_at = time.perf_counter()
+    telemetry = {
+        "ai_mode": args.ai_mode or "both",
+        "polling_seconds": None,
+        "cloud_seconds": None,
+        "local_seconds": None,
+        "orchestrator_total_seconds": None,
+    }
 
     # 1) Run the Nornir-based poller (collects configs, writes diffs, and runs cloud AI)
     poller_script = Path("src/poller_nornir.py")
@@ -131,8 +169,22 @@ def main():
     if args.dry_run:
         poller_cmd.append("--dry-run")
     poller_cmd.append("--skip-notifications")
+    if args.ai_mode != "both":
+        poller_cmd.extend(["--ai-mode", args.ai_mode])
 
-    run_cmd(poller_cmd)
+    poller_started_at = time.perf_counter()
+    poller_rc = run_cmd(poller_cmd, allow_failure=True)
+    if poller_rc != 0:
+        print(f"[!] Poller failed with exit code {poller_rc}; skipping cloud results and continuing.")
+    telemetry["polling_seconds"] = round(time.perf_counter() - poller_started_at, 3)
+
+    poller_metrics_path = Path("data/telemetry/poller_metrics.json")
+    if poller_metrics_path.exists():
+        poller_metrics = load_existing_metrics(poller_metrics_path)
+        if poller_metrics.get("polling_seconds") is not None:
+            telemetry["polling_seconds"] = poller_metrics["polling_seconds"]
+        if poller_metrics.get("cloud_seconds") is not None:
+            telemetry["cloud_seconds"] = poller_metrics["cloud_seconds"]
 
     # 2) Locate diff files produced by the poller
     diff_root = Path(settings["storage"]["diff_path"])
@@ -211,25 +263,35 @@ def main():
             print(f"Rule engine failed for {device_name}: {exc}")
             continue
 
+        should_run_cloud = args.ai_mode in {"both", "cloud"}
+        should_run_local = args.ai_mode in {"both", "local"}
+
         # 4) Cloud AI: extract single-device summary from gemini batch output if available
-        cloud_summary = find_cloud_summary(device_name, cloud_batch)
-        if cloud_summary is not None and should_run_output(cloud_out, args.force, source=diff_file):
-            try:
-                cloud_out.write_text(json.dumps(cloud_summary, indent=2), encoding="utf-8")
-                print(f"Cloud AI output extracted to: {cloud_out}")
-            except Exception as exc:
-                print(f"Failed to write cloud AI output for {device_name}: {exc}")
-        elif cloud_summary is None:
-            if cloud_batch_path.exists():
-                print(f"Cloud batch exists but no entry for {device_name} was found.")
+        if should_run_cloud:
+            cloud_summary = find_cloud_summary(device_name, cloud_batch)
+            if cloud_summary is not None and should_run_output(cloud_out, args.force, source=diff_file):
+                try:
+                    cloud_out.write_text(json.dumps(cloud_summary, indent=2), encoding="utf-8")
+                    print(f"Cloud AI output extracted to: {cloud_out}")
+                except Exception as exc:
+                    print(f"Failed to write cloud AI output for {device_name}: {exc}")
+            elif cloud_summary is None:
+                if cloud_batch_path.exists():
+                    print(f"Cloud batch exists but no entry for {device_name} was found.")
+                else:
+                    print("No cloud batch output found (gemini_batch_output.json).")
             else:
-                print("No cloud batch output found (gemini_batch_output.json).")
+                print(f"Skipping cloud extraction for {device_name}; {cloud_out} is up to date.")
         else:
-            print(f"Skipping cloud extraction for {device_name}; {cloud_out} is up to date.")
+            print(f"AI mode '{args.ai_mode}' skips cloud AI for {device_name}.")
 
         # 5) Local AI + Scoring: skip during dry-run to avoid heavy model loads
         if args.dry_run:
             print(f"Dry-run: skipping local AI and scoring for {device_name}.")
+            continue
+
+        if not should_run_local:
+            print(f"AI mode '{args.ai_mode}' skips local AI for {device_name}; skipping scoring.")
             continue
 
         # 5a) Local AI only if needed
@@ -239,6 +301,7 @@ def main():
 
         if should_run_output(local_out, args.force, source=cfg_path):
             try:
+                local_started_at = time.perf_counter()
                 local_cmd = [
                     sys.executable,
                     "risk_qwen_v2.py",
@@ -248,7 +311,10 @@ def main():
                     str(local_out),
                 ]
                 run_cmd(local_cmd)
-                print(f"Local AI output saved to: {local_out}")
+                elapsed = round(time.perf_counter() - local_started_at, 3)
+                current_local = telemetry.get("local_seconds") or 0.0
+                telemetry["local_seconds"] = round(current_local + elapsed, 3)
+                print(f"Local AI output saved to: {local_out} in {elapsed}s")
             except Exception as exc:
                 print(f"Local AI failed for {device_name}: {exc}")
         else:
@@ -267,7 +333,7 @@ def main():
             print(f"Skipping scoring for {device_name}; rule engine result missing.")
             continue
 
-        if not cloud_out.exists() and not args.force:
+        if not cloud_out.exists() and not args.force and should_run_cloud:
             print(f"Skipping scoring for {device_name}; cloud output missing and force not set.")
             continue
 
@@ -315,6 +381,10 @@ def main():
                 print(f"No notification payload in final score output for {device_name}")
         except Exception as exc:
             print(f"Failed sending combined email notification for {device_name}: {exc}")
+
+    telemetry["orchestrator_total_seconds"] = round(time.perf_counter() - orchestrator_started_at, 3)
+    metrics_path = persist_metrics(telemetry, Path("data/telemetry"))
+    print(f"Telemetry saved to: {metrics_path}")
 
 
 if __name__ == "__main__":
