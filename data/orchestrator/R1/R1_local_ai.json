@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "assessment_id": "e659759e-dbe6-44e8-986b-7e7fa70f7eda",
-  "generated_at": "2026-07-22T22:14:39.521472+00:00",
-  "input_sha256": "d52a81926ce01ccdab27b61e254c8fbc8717021163f702936c288f704fffe644",
+  "assessment_id": "747b5c94-2216-449b-83a4-f75f0aaf4b6d",
+  "generated_at": "2026-07-22T23:25:07.532484+00:00",
+  "input_sha256": "ec710e261ccc14ca80a81c5fc817d6f9e7754543b6f8681548f3ef59758806a8",
   "risk": {
-    "score": 93,
-    "level": "critical",
-    "model_score": 93,
+    "score": 55,
+    "level": "high",
+    "model_score": 55,
     "deterministic_floor": 55,
     "deterministic_floor_applied": false,
     "score_source": "model"
@@ -14,11 +14,13 @@
   "decision": {
     "approval_required": true,
     "auto_approval_allowed": false,
-    "recommended_action": "reject_or_senior_approval_required"
+    "recommended_action": "approve_with_conditions_or_senior_approval_required"
   },
   "change": {
     "detected_operations": [
-      "interface_shutdown"
+      "interface_shutdown",
+      "ospf_network_add",
+      "interface_description"
     ],
     "destructive_operations": [
       "interface_shutdown"
@@ -29,20 +31,8 @@
       "routing"
     ]
   },
-  "reason": "Shutting down this interface may break an uplink or routing adjacency based on the topology context.",
+  "reason": "The proposed change involves shutting down an interface which could disrupt connectivity and routing if this interface is critical to the network topology. Additionally, the OSPF network addition might affect routing adjacencies.",
   "retrieval_evidence": [
-    {
-      "sample_id": "HIGH_0281",
-      "category": "interface_shutdown_critical",
-      "sample_risk_score": 93,
-      "sample_risk_level": "critical",
-      "operations": [
-        "interface_shutdown"
-      ],
-      "semantic_similarity": 0.818,
-      "operation_similarity": 1.0,
-      "combined_score": 1.159
-    },
     {
       "sample_id": "HIGH_0246",
       "category": "interface_shutdown_critical",
@@ -51,21 +41,33 @@
       "operations": [
         "interface_shutdown"
       ],
-      "semantic_similarity": 0.814,
-      "operation_similarity": 1.0,
-      "combined_score": 1.157
+      "semantic_similarity": 0.727,
+      "operation_similarity": 0.333,
+      "combined_score": 0.88
     },
     {
-      "sample_id": "LOW_0043",
-      "category": "interface_description",
-      "sample_risk_score": 9,
-      "sample_risk_level": "low",
+      "sample_id": "HIGH_0281",
+      "category": "interface_shutdown_critical",
+      "sample_risk_score": 93,
+      "sample_risk_level": "critical",
       "operations": [
-        "interface_description"
+        "interface_shutdown"
       ],
-      "semantic_similarity": 0.581,
-      "operation_similarity": 0.0,
-      "combined_score": 0.29
+      "semantic_similarity": 0.727,
+      "operation_similarity": 0.333,
+      "combined_score": 0.88
+    },
+    {
+      "sample_id": "MEDIUM_0106",
+      "category": "ospf_network_add",
+      "sample_risk_score": 49,
+      "sample_risk_level": "medium",
+      "operations": [
+        "ospf_network_add"
+      ],
+      "semantic_similarity": 0.7,
+      "operation_similarity": 0.333,
+      "combined_score": 0.466
     }
   ],
   "engine_metadata": {

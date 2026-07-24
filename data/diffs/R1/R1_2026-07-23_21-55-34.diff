@@ -1,0 +1,30 @@
+diff --git a/data/configs/current/R1.cfg b/data/configs/current/R1.cfg
+index b4f44bb..552dae3 100644
+--- a/data/configs/current/R1.cfg
++++ b/data/configs/current/R1.cfg
+@@ -1,7 +1,7 @@
+ Building configuration...
+-Current configuration : 4199 bytes
++Current configuration : 4210 bytes
+ !
+-! Last configuration change at 23:14:34 UTC Wed Jul 22 2026
++! Last configuration change at 01:51:13 UTC Fri Jul 24 2026
+ !
+ version 17.3
+ service timestamps debug datetime msec
+@@ -143,7 +143,6 @@ interface GigabitEthernet1
+ interface GigabitEthernet2
+  description local-facin-interface
+  ip address 192.168.1.1 255.255.255.0
+- shutdown
+  negotiation auto
+  no mop enabled
+  no mop sysid
+@@ -171,6 +170,7 @@ ip http secure-server
+ !
+ ip route 0.0.0.0 0.0.0.0 172.16.151.1
+ ip ssh version 2
++ip scp server enable
+ !
+ !
+ logging host 192.168.1.1

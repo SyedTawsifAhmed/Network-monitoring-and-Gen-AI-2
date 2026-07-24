@@ -1,0 +1,31 @@
+diff --git a/data/configs/current/R1.cfg b/data/configs/current/R1.cfg
+index 3346ed2..b4f44bb 100644
+--- a/data/configs/current/R1.cfg
++++ b/data/configs/current/R1.cfg
+@@ -1,5 +1,5 @@
+ Building configuration...
+-Current configuration : 4102 bytes
++Current configuration : 4199 bytes
+ !
+ ! Last configuration change at 23:14:34 UTC Wed Jul 22 2026
+ !
+@@ -141,7 +141,9 @@ interface GigabitEthernet1
+  no mop sysid
+ !
+ interface GigabitEthernet2
++ description local-facin-interface
+  ip address 192.168.1.1 255.255.255.0
++ shutdown
+  negotiation auto
+  no mop enabled
+  no mop sysid
+@@ -160,6 +162,9 @@ interface GigabitEthernet4
+  no mop enabled
+  no mop sysid
+ !
++router ospf 1
++ network 192.168.1.1 0.0.0.0 area 0
++!
+ ip forward-protocol nd
+ no ip http server
+ ip http secure-server

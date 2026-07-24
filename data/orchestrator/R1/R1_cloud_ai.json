@@ -1,28 +1,30 @@
 {
-  "headline": "Interface Shutdown on GigabitEthernet3",
-  "executive_summary": "The core router R1 has been configured to shut down interface GigabitEthernet3. This interface is designated as an internal routing peer connection to R3. This action will likely disrupt any existing or future routing adjacencies with R3.",
-  "technical_summary": "Interface GigabitEthernet3 on R1 was set to 'shutdown'. This will terminate any L2/L3 connectivity to neighbor R3.",
-  "change_type": "Interface Change",
+  "headline": "OSPF configuration added and interface Gi2 shutdown",
+  "executive_summary": "A configuration change was applied to R1 that enables OSPF routing for the 192.168.1.1 network while simultaneously shutting down the interface (GigabitEthernet2) associated with that network. This creates a contradiction where the routing protocol is configured for a disabled interface, which will prevent the OSPF adjacency from forming.",
+  "technical_summary": "Added 'router ospf 1' with network 192.168.1.1/32 in area 0. Interface GigabitEthernet2 was updated with a description and set to 'shutdown'.",
+  "change_type": "Multiple Changes",
   "affected_services": [
     "routing",
-    "internal connectivity"
+    "internal-routing-peer"
   ],
   "changed_areas": [
+    "OSPF",
     "Interface"
   ],
-  "risk_level": "Medium",
-  "risk_score": 45,
+  "risk_level": "High",
+  "risk_score": 75,
   "decision_recommendation": "Manual Review",
-  "risk_reason": "Disabling an interface connected to a core routing peer can cause routing instability or partition the network.",
-  "potential_impact": "Loss of connectivity to R3 and potential routing convergence events.",
+  "risk_reason": "The configuration change shuts down the interface that the newly configured OSPF process is attempting to use, which will result in a routing failure for the internal peer.",
+  "potential_impact": "Loss of connectivity to the internal routing peer on GigabitEthernet2. OSPF adjacency will fail to establish.",
   "validation_checks": [
-    "show ip interface brief",
-    "show ip protocols",
-    "show ip route"
+    "show ip interface brief | include GigabitEthernet2",
+    "show ip ospf neighbor",
+    "show ip route ospf"
   ],
-  "recommended_action": "Verify if the shutdown of Gi3 was intentional for maintenance or decommissioning.",
-  "rollback_recommendation": "If connectivity to R3 is required, execute 'no shutdown' on interface GigabitEthernet3.",
+  "recommended_action": "Verify if the shutdown of GigabitEthernet2 was intentional. If connectivity to the internal peer is required, remove the 'shutdown' command from the interface.",
+  "rollback_recommendation": "Remove the 'router ospf 1' configuration and remove the 'shutdown' command from GigabitEthernet2 if the interface was intended to be active.",
   "anomalies": [
-    "% Invalid input detected at '^' marker in logs"
+    "OSPF configured on a shutdown interface",
+    "Invalid input detected log entry suggests potential syntax or sequence issues during application"
   ]
 }

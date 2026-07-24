@@ -13,3 +13,7 @@ sentence-transformers>=3.0,<6
 llama-cpp-python>=0.3.7,<0.4
 huggingface-hub>=0.27,<2
 nornir>=3.0,<4
+nornir_netmiko>=1.0,<2
+nornir_napalm>=0.4,<1
+nornir_utils>=0.2,<1
+napalm>=4.0,<6

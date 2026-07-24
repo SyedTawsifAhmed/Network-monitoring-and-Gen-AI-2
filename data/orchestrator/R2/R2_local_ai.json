@@ -1,68 +1,70 @@
 {
   "schema_version": "1.0",
-  "assessment_id": "81080966-037d-4e3a-8871-c9ed5372b48a",
-  "generated_at": "2026-07-22T22:15:42.306681+00:00",
-  "input_sha256": "36488e48179440440a8f1def0fcdd78a034c9d6c1531f79e24ee18d0b2b4e3cc",
+  "assessment_id": "cda914e3-8353-4757-9d41-df304ce40d4f",
+  "generated_at": "2026-07-22T23:20:57.879952+00:00",
+  "input_sha256": "e2c6e50487d3dd65f8fac01721c8c9ad842a51d0d566cf95a43f1246d66ba0d9",
   "risk": {
-    "score": 9,
-    "level": "low",
-    "model_score": 9,
+    "score": 50,
+    "level": "medium",
+    "model_score": 50,
     "deterministic_floor": 0,
     "deterministic_floor_applied": false,
     "score_source": "model"
   },
   "decision": {
     "approval_required": false,
-    "auto_approval_allowed": true,
-    "recommended_action": "approve"
+    "auto_approval_allowed": false,
+    "recommended_action": "warn"
   },
   "change": {
     "detected_operations": [
-      "interface_description"
+      "other"
     ],
     "destructive_operations": [],
     "affected_areas": [
       "interface",
-      "documentation"
+      "routing",
+      "connectivity"
     ]
   },
-  "reason": "Changing an interface description updates documentation only and does not alter forwarding behavior.",
+  "reason": "Changing interface addressing can affect directly connected reachability and routing adjacencies.",
   "retrieval_evidence": [
     {
-      "sample_id": "LOW_0043",
-      "category": "interface_description",
-      "sample_risk_score": 9,
-      "sample_risk_level": "low",
-      "operations": [
-        "interface_description"
-      ],
-      "semantic_similarity": 0.778,
-      "operation_similarity": 1.0,
-      "combined_score": 0.939
-    },
-    {
-      "sample_id": "LOW_0028",
-      "category": "interface_description",
-      "sample_risk_score": 8,
-      "sample_risk_level": "low",
-      "operations": [
-        "interface_description"
-      ],
-      "semantic_similarity": 0.776,
-      "operation_similarity": 1.0,
-      "combined_score": 0.938
-    },
-    {
-      "sample_id": "MEDIUM_0089",
+      "sample_id": "MEDIUM_0125",
       "category": "interface_ip_change",
-      "sample_risk_score": 55,
+      "sample_risk_score": 50,
+      "sample_risk_level": "medium",
+      "operations": [
+        "interface_ip_change"
+      ],
+      "semantic_similarity": 0.631,
+      "operation_similarity": 0.0,
+      "combined_score": 0.315
+    },
+    {
+      "sample_id": "MEDIUM_0135",
+      "category": "interface_ip_change",
+      "sample_risk_score": 51,
       "sample_risk_level": "high",
       "operations": [
         "interface_ip_change"
       ],
-      "semantic_similarity": 0.691,
+      "semantic_similarity": 0.625,
       "operation_similarity": 0.0,
-      "combined_score": 0.346
+      "combined_score": 0.312
+    },
+    {
+      "sample_id": "LOW_0061",
+      "category": "add_loopback_not_advertised",
+      "sample_risk_score": 17,
+      "sample_risk_level": "low",
+      "operations": [
+        "interface_ip_change",
+        "add_loopback_not_advertised"
+      ],
+      "semantic_similarity": 0.616,
+      "operation_similarity": 0.0,
+      "combined_score": 0.308
     }
   ],
   "engine_metadata": {

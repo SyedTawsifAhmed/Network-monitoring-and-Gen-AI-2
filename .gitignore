@@ -14,3 +14,4 @@ huggingface/
 .DS_Store
 venv/
 *.pyc
+.pytest_cache/

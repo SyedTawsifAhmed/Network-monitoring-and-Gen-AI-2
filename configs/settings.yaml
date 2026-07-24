@@ -43,6 +43,9 @@ notifications:
       engineer:
         recipients:
           - syed.tawsif.ahmed@torontomu.ca
+          - simrat.s.gill@torontomu.ca
 
 rollback:
   enabled: false
+  max_age_hours: 24
+  napalm_transport: ssh

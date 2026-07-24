@@ -1,48 +1,49 @@
 {
-  "generated_at": "2026-07-22T00:08:26.602546+00:00",
-  "final_score": 45.0,
-  "risk_level": "medium",
-  "decision": "manual_review",
-  "decision_reason": "The change has material or unclear service impact and requires operator approval.",
-  "weighted_score_before_overrides": 45.0,
+  "generated_at": "2026-07-22T23:22:01.366921+00:00",
+  "final_score": 17.5,
+  "risk_level": "low",
+  "decision": "warn",
+  "decision_reason": "The change is not blocked, but its potential impact should be acknowledged.",
+  "weighted_score_before_overrides": 17.5,
   "weights": {
     "cloud_ai": 0.25,
     "local_ai": 0.35,
     "rule_engine": 0.4
   },
   "source_scores": {
-    "cloud_ai": 5.0,
-    "local_ai": 85.0,
-    "rule_engine": 35.0
+    "cloud_ai": 0.0,
+    "local_ai": 50.0,
+    "rule_engine": 0.0
   },
   "source_levels": {
     "cloud_ai": "low",
-    "local_ai": "critical",
-    "rule_engine": "medium"
+    "local_ai": "medium",
+    "rule_engine": "low"
   },
   "source_decision_hints": {
     "cloud_ai": "approve",
-    "local_ai": "implement_strict_access_controls,_enable_encryption_for_data_in_transit,_and_conduct_regular_security_audits.",
-    "rule_engine": "manual_review"
+    "local_ai": "warn",
+    "rule_engine": "approve"
   },
   "source_reasons": {
     "cloud_ai": [
-      "The change is purely cosmetic (documentation) and carries no functional risk.",
+      "The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.",
       "None"
     ],
     "local_ai": [
-      "The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation."
+      "Changing interface addressing can affect directly connected reachability and routing adjacencies."
     ],
     "rule_engine": []
   },
   "source_affected_areas": {
     "cloud_ai": [
-      "Interface",
+      "System",
       "None"
     ],
     "local_ai": [
-      "network security",
-      "data integrity"
+      "interface",
+      "routing",
+      "connectivity"
     ],
     "rule_engine": []
   },
@@ -55,21 +56,22 @@
   "hard_stop_triggered": false,
   "destructive_operations": [],
   "affected_areas": [
-    "Interface",
+    "System",
     "None",
-    "network security",
-    "data integrity"
+    "interface",
+    "routing",
+    "connectivity"
   ],
   "supporting_reasons": [
-    "The change is purely cosmetic (documentation) and carries no functional risk.",
+    "The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.",
     "None",
-    "The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation."
+    "Changing interface addressing can affect directly connected reachability and routing adjacencies."
   ],
   "notification": {
-    "severity": "medium",
-    "title": "[MEDIUM] Network change decision: Manual Review",
-    "message": "Final risk score: 45.0/100.\nOverall decision: Manual Review.\n\nCloud AI summary:\n  - Score: 5.0\n  - Risk level: low\n  - Recommendation: approve\n  - Key findings: The change is purely cosmetic (documentation) and carries no functional risk.; None\n  - Changed or affected areas: Interface; None\n\nLocal AI summary:\n  - Score: 85.0\n  - Risk level: critical\n  - Recommendation: implement_strict_access_controls,_enable_encryption_for_data_in_transit,_and_conduct_regular_security_audits.\n  - Key findings: The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation.\n  - Changed or affected areas: network security; data integrity\n  - Destructive operations: None noted\n\nRule-engine summary:\n  - Score: 35.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Interface; None; network security; data integrity\nSupporting reasons: The change is purely cosmetic (documentation) and carries no functional risk.; None; The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation.\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
-    "requires_acknowledgement": true
+    "severity": "low",
+    "title": "[LOW] Network change decision: Warn",
+    "message": "Final risk score: 17.5/100.\nOverall decision: Warn.\n\nCloud AI summary:\n  - Score: 0.0\n  - Risk level: low\n  - Recommendation: approve\n  - Key findings: The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.; None\n  - Changed or affected areas: System; None\n\nLocal AI summary:\n  - Score: 50.0\n  - Risk level: medium\n  - Recommendation: warn\n  - Key findings: Changing interface addressing can affect directly connected reachability and routing adjacencies.\n  - Changed or affected areas: interface; routing; connectivity\n  - Destructive operations: None noted\n\nRule-engine summary:\n  - Score: 0.0\n  - Risk level: low\n  - Decision hint: approve\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: System; None; interface; routing; connectivity\nSupporting reasons: The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.; None; Changing interface addressing can affect directly connected reachability and routing adjacencies.\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
+    "requires_acknowledgement": false
   },
   "notification_delivery": {
     "channel": "console",

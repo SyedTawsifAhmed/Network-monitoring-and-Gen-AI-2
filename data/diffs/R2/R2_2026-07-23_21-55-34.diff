@@ -1,0 +1,22 @@
+diff --git a/data/configs/current/R2.cfg b/data/configs/current/R2.cfg
+index 8404a3e..0df50d9 100644
+--- a/data/configs/current/R2.cfg
++++ b/data/configs/current/R2.cfg
+@@ -1,7 +1,7 @@
+ Building configuration...
+-Current configuration : 4266 bytes
++Current configuration : 4287 bytes
+ !
+-! Last configuration change at 23:18:54 UTC Wed Jul 22 2026
++! Last configuration change at 01:33:20 UTC Fri Jul 24 2026
+ !
+ version 17.3
+ service timestamps debug datetime msec
+@@ -180,6 +180,7 @@ ip http secure-server
+ !
+ ip route 0.0.0.0 0.0.0.0 172.16.151.1
+ ip ssh version 2
++ip scp server enable
+ !
+ !
+ !

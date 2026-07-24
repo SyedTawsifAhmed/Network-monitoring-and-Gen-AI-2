@@ -9,6 +9,12 @@ cisco_iosxe:
       extras:
         device_type: cisco_ios
         secret: admin
+    napalm:
+      platform: ios          # NAPALM driver name — different from netmiko's cisco_ios
+      extras:
+        optional_args:
+          secret: admin
+          transport: ssh
 
 cisco_ios:
   platform: cisco_ios
@@ -20,9 +26,48 @@ cisco_ios:
       extras:
         device_type: cisco_ios
         secret: admin
+    napalm:
+      platform: ios
+      extras:
+        optional_args:
+          secret: admin
+          transport: ssh
 
 edge:
   data:
     role: edge
 
-# Expandable groups for future use
+# --- Future vendor groups ---
+# Add devices to a group below and assign in hosts.yaml
+#
+# arista_eos:
+#   platform: eos
+#   username: admin
+#   password: admin
+#   port: 22
+#   connection_options:
+#     netmiko:
+#       extras:
+#         device_type: arista_eos
+#         secret: ""
+#     napalm:
+#       platform: eos        # NAPALM driver — uses configure session, no archive needed
+#       extras:
+#         optional_args:
+#           transport: https
+#           port: 443
+#
+# juniper_junos:
+#   platform: junos
+#   username: admin
+#   password: admin
+#   port: 22
+#   connection_options:
+#     netmiko:
+#       extras:
+#         device_type: juniper_junos
+#     napalm:
+#       platform: junos      # NAPALM driver — uses load replace + commit
+#       extras:
+#         optional_args:
+#           transport: ssh

@@ -1,52 +1,58 @@
 {
-  "generated_at": "2026-07-22T22:14:42.018359+00:00",
-  "final_score": 81.0,
-  "risk_level": "critical",
-  "decision": "deny",
-  "decision_reason": "A destructive operation was identified and the combined assessment reached critical risk.",
-  "weighted_score_before_overrides": 57.8,
+  "generated_at": "2026-07-22T23:25:09.297755+00:00",
+  "final_score": 56.8,
+  "risk_level": "high",
+  "decision": "manual_review",
+  "decision_reason": "The change has material or unclear service impact and requires operator approval.",
+  "weighted_score_before_overrides": 56.8,
   "weights": {
     "cloud_ai": 0.25,
     "local_ai": 0.35,
     "rule_engine": 0.4
   },
   "source_scores": {
-    "cloud_ai": 45.0,
-    "local_ai": 93.0,
-    "rule_engine": 35.0
+    "cloud_ai": 75.0,
+    "local_ai": 55.0,
+    "rule_engine": 47.0
   },
   "source_levels": {
-    "cloud_ai": "medium",
-    "local_ai": "critical",
+    "cloud_ai": "high",
+    "local_ai": "high",
     "rule_engine": "medium"
   },
   "source_decision_hints": {
     "cloud_ai": "manual_review",
-    "local_ai": "reject_or_senior_approval_required",
+    "local_ai": "approve_with_conditions_or_senior_approval_required",
     "rule_engine": "manual_review"
   },
   "source_reasons": {
     "cloud_ai": [
-      "Disabling an interface connected to a core routing peer can cause routing instability or partition the network.",
-      "Loss of connectivity to R3 and potential routing convergence events."
+      "The configuration change shuts down the interface that the newly configured OSPF process is attempting to use, which will result in a routing failure for the internal peer.",
+      "Loss of connectivity to the internal routing peer on GigabitEthernet2. OSPF adjacency will fail to establish."
     ],
     "local_ai": [
-      "Shutting down this interface may break an uplink or routing adjacency based on the topology context."
+      "The proposed change involves shutting down an interface which could disrupt connectivity and routing if this interface is critical to the network topology. Additionally, the OSPF network addition might affect routing adjacencies."
     ],
-    "rule_engine": []
+    "rule_engine": [
+      "OSPF network statements may advertise new prefixes or form new adjacencies."
+    ]
   },
   "source_affected_areas": {
     "cloud_ai": [
+      "OSPF",
       "Interface",
       "routing",
-      "internal connectivity"
+      "internal-routing-peer"
     ],
     "local_ai": [
       "interface",
       "connectivity",
       "routing"
     ],
-    "rule_engine": []
+    "rule_engine": [
+      "ospf",
+      "routing"
+    ]
   },
   "source_destructive_operations": {
     "cloud_ai": [],
@@ -55,28 +61,28 @@
     ],
     "rule_engine": []
   },
-  "overrides_applied": [
-    "critical_destructive_change_floor"
-  ],
+  "overrides_applied": [],
   "hard_stop_triggered": false,
   "destructive_operations": [
     "interface_shutdown"
   ],
   "affected_areas": [
+    "OSPF",
     "Interface",
     "routing",
-    "internal connectivity",
+    "internal-routing-peer",
     "connectivity"
   ],
   "supporting_reasons": [
-    "Disabling an interface connected to a core routing peer can cause routing instability or partition the network.",
-    "Loss of connectivity to R3 and potential routing convergence events.",
-    "Shutting down this interface may break an uplink or routing adjacency based on the topology context."
+    "The configuration change shuts down the interface that the newly configured OSPF process is attempting to use, which will result in a routing failure for the internal peer.",
+    "Loss of connectivity to the internal routing peer on GigabitEthernet2. OSPF adjacency will fail to establish.",
+    "The proposed change involves shutting down an interface which could disrupt connectivity and routing if this interface is critical to the network topology. Additionally, the OSPF network addition might affect routing adjacencies.",
+    "OSPF network statements may advertise new prefixes or form new adjacencies."
   ],
   "notification": {
-    "severity": "critical",
-    "title": "[CRITICAL] Network change decision: Deny",
-    "message": "Final risk score: 81.0/100.\nOverall decision: Deny.\n\nCloud AI summary:\n  - Score: 45.0\n  - Risk level: medium\n  - Recommendation: manual_review\n  - Key findings: Disabling an interface connected to a core routing peer can cause routing instability or partition the network.; Loss of connectivity to R3 and potential routing convergence events.\n  - Changed or affected areas: Interface; routing; internal connectivity\n\nLocal AI summary:\n  - Score: 93.0\n  - Risk level: critical\n  - Recommendation: reject_or_senior_approval_required\n  - Key findings: Shutting down this interface may break an uplink or routing adjacency based on the topology context.\n  - Changed or affected areas: interface; connectivity; routing\n  - Destructive operations: interface_shutdown\n\nRule-engine summary:\n  - Score: 35.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Interface; routing; internal connectivity; connectivity\nSupporting reasons: Disabling an interface connected to a core routing peer can cause routing instability or partition the network.; Loss of connectivity to R3 and potential routing convergence events.; Shutting down this interface may break an uplink or routing adjacency based on the topology context.\nDestructive operations detected: interface_shutdown\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
+    "severity": "high",
+    "title": "[HIGH] Network change decision: Manual Review",
+    "message": "Final risk score: 56.8/100.\nOverall decision: Manual Review.\n\nCloud AI summary:\n  - Score: 75.0\n  - Risk level: high\n  - Recommendation: manual_review\n  - Key findings: The configuration change shuts down the interface that the newly configured OSPF process is attempting to use, which will result in a routing failure for the internal peer.; Loss of connectivity to the internal routing peer on GigabitEthernet2. OSPF adjacency will fail to establish.\n  - Changed or affected areas: OSPF; Interface; routing; internal-routing-peer\n\nLocal AI summary:\n  - Score: 55.0\n  - Risk level: high\n  - Recommendation: approve_with_conditions_or_senior_approval_required\n  - Key findings: The proposed change involves shutting down an interface which could disrupt connectivity and routing if this interface is critical to the network topology. Additionally, the OSPF network addition might affect routing adjacencies.\n  - Changed or affected areas: interface; connectivity; routing\n  - Destructive operations: interface_shutdown\n\nRule-engine summary:\n  - Score: 47.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: OSPF network statements may advertise new prefixes or form new adjacencies.\n  - Affected areas: ospf; routing\n\nAggregate affected areas: OSPF; Interface; routing; internal-routing-peer; connectivity\nSupporting reasons: The configuration change shuts down the interface that the newly configured OSPF process is attempting to use, which will result in a routing failure for the internal peer.; Loss of connectivity to the internal routing peer on GigabitEthernet2. OSPF adjacency will fail to establish.; The proposed change involves shutting down an interface which could disrupt connectivity and routing if this interface is critical to the network topology. Additionally, the OSPF network addition might affect routing adjacencies.; OSPF network statements may advertise new prefixes or form new adjacencies.\nDestructive operations detected: interface_shutdown\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
     "requires_acknowledgement": true
   },
   "notification_delivery": {

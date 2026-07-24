@@ -3,59 +3,203 @@
         {
             "device_name": "R1",
             "summary": {
-                "headline": "Interface Shutdown on GigabitEthernet3",
-                "executive_summary": "The core router R1 has been configured to shut down interface GigabitEthernet3. This interface is designated as an internal routing peer connection to R3. This action will likely disrupt any existing or future routing adjacencies with R3.",
-                "technical_summary": "Interface GigabitEthernet3 on R1 was set to 'shutdown'. This will terminate any L2/L3 connectivity to neighbor R3.",
-                "change_type": "Interface Change",
+                "headline": "Enabled SCP Server",
+                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
+                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
+                "change_type": "Security Change",
                 "affected_services": [
-                    "routing",
-                    "internal connectivity"
+                    "Management Access"
                 ],
                 "changed_areas": [
-                    "Interface"
+                    "Security"
                 ],
-                "risk_level": "Medium",
-                "risk_score": 45,
-                "decision_recommendation": "Manual Review",
-                "risk_reason": "Disabling an interface connected to a core routing peer can cause routing instability or partition the network.",
-                "potential_impact": "Loss of connectivity to R3 and potential routing convergence events.",
+                "risk_level": "Low",
+                "risk_score": 5,
+                "decision_recommendation": "Approve",
+                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
+                "potential_impact": "None expected; enables secure file transfer capability.",
                 "validation_checks": [
-                    "show ip interface brief",
-                    "show ip protocols",
-                    "show ip route"
+                    "show run | include ip scp",
+                    "Verify SCP connectivity from a management host"
                 ],
-                "recommended_action": "Verify if the shutdown of Gi3 was intentional for maintenance or decommissioning.",
-                "rollback_recommendation": "If connectivity to R3 is required, execute 'no shutdown' on interface GigabitEthernet3.",
+                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
+                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
                 "anomalies": [
-                    "% Invalid input detected at '^' marker in logs"
+                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
                 ]
             }
         },
         {
             "device_name": "R2",
             "summary": {
-                "headline": "Interface Description Change",
-                "executive_summary": "The description for interface GigabitEthernet1 on R2 was updated from 'external' to 'ext'. This is a cosmetic change and does not affect the operational state or traffic forwarding of the device.",
-                "technical_summary": "Modified description string on GigabitEthernet1.",
-                "change_type": "Interface Change",
+                "headline": "Enabled SCP Server",
+                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
+                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
+                "change_type": "Security Change",
                 "affected_services": [
-                    "none"
+                    "Management Access"
                 ],
                 "changed_areas": [
-                    "Interface"
+                    "Security"
                 ],
                 "risk_level": "Low",
                 "risk_score": 5,
                 "decision_recommendation": "Approve",
-                "risk_reason": "The change is purely cosmetic and does not impact device functionality or routing.",
-                "potential_impact": "None.",
+                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
+                "potential_impact": "None expected; enables secure file transfer capability.",
                 "validation_checks": [
-                    "show interface GigabitEthernet1"
+                    "show run | include ip scp",
+                    "Verify SCP connectivity from a management host"
                 ],
-                "recommended_action": "None.",
-                "rollback_recommendation": "Not required.",
+                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
+                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
                 "anomalies": [
-                    "% Invalid input detected at '^' marker in logs"
+                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                ]
+            }
+        },
+        {
+            "device_name": "R3",
+            "summary": {
+                "headline": "Enabled SCP Server",
+                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
+                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
+                "change_type": "Security Change",
+                "affected_services": [
+                    "Management Access"
+                ],
+                "changed_areas": [
+                    "Security"
+                ],
+                "risk_level": "Low",
+                "risk_score": 5,
+                "decision_recommendation": "Approve",
+                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
+                "potential_impact": "None expected; enables secure file transfer capability.",
+                "validation_checks": [
+                    "show run | include ip scp",
+                    "Verify SCP connectivity from a management host"
+                ],
+                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
+                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "anomalies": [
+                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                ]
+            }
+        },
+        {
+            "device_name": "R4",
+            "summary": {
+                "headline": "Enabled SCP Server",
+                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
+                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
+                "change_type": "Security Change",
+                "affected_services": [
+                    "Management Access"
+                ],
+                "changed_areas": [
+                    "Security"
+                ],
+                "risk_level": "Low",
+                "risk_score": 5,
+                "decision_recommendation": "Approve",
+                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
+                "potential_impact": "None expected; enables secure file transfer capability.",
+                "validation_checks": [
+                    "show run | include ip scp",
+                    "Verify SCP connectivity from a management host"
+                ],
+                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
+                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "anomalies": [
+                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                ]
+            }
+        },
+        {
+            "device_name": "R6",
+            "summary": {
+                "headline": "Enabled SCP Server",
+                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
+                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
+                "change_type": "Security Change",
+                "affected_services": [
+                    "Management Access"
+                ],
+                "changed_areas": [
+                    "Security"
+                ],
+                "risk_level": "Low",
+                "risk_score": 5,
+                "decision_recommendation": "Approve",
+                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
+                "potential_impact": "None expected; enables secure file transfer capability.",
+                "validation_checks": [
+                    "show run | include ip scp",
+                    "Verify SCP connectivity from a management host"
+                ],
+                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
+                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "anomalies": [
+                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                ]
+            }
+        },
+        {
+            "device_name": "R7",
+            "summary": {
+                "headline": "Enabled SCP Server",
+                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
+                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
+                "change_type": "Security Change",
+                "affected_services": [
+                    "Management Access"
+                ],
+                "changed_areas": [
+                    "Security"
+                ],
+                "risk_level": "Low",
+                "risk_score": 5,
+                "decision_recommendation": "Approve",
+                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
+                "potential_impact": "None expected; enables secure file transfer capability.",
+                "validation_checks": [
+                    "show run | include ip scp",
+                    "Verify SCP connectivity from a management host"
+                ],
+                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
+                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "anomalies": [
+                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                ]
+            }
+        },
+        {
+            "device_name": "R8",
+            "summary": {
+                "headline": "Enabled SCP Server",
+                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
+                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
+                "change_type": "Security Change",
+                "affected_services": [
+                    "Management Access"
+                ],
+                "changed_areas": [
+                    "Security"
+                ],
+                "risk_level": "Low",
+                "risk_score": 5,
+                "decision_recommendation": "Approve",
+                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
+                "potential_impact": "None expected; enables secure file transfer capability.",
+                "validation_checks": [
+                    "show run | include ip scp",
+                    "Verify SCP connectivity from a management host"
+                ],
+                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
+                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "anomalies": [
+                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
                 ]
             }
         }
