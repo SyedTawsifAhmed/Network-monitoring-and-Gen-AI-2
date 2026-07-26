@@ -3,203 +3,231 @@
         {
             "device_name": "R1",
             "summary": {
-                "headline": "Enabled SCP Server",
-                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
-                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
-                "change_type": "Security Change",
+                "headline": "Archive configuration change and minor syntax error",
+                "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was detected during the application of the change, likely due to an invalid command.",
+                "technical_summary": "Added archive path and maximum file count. A '% Invalid input detected' error occurred, likely due to the removal of 'file prompt quiet'.",
+                "change_type": "Multiple Changes",
                 "affected_services": [
-                    "Management Access"
+                    "Management"
                 ],
                 "changed_areas": [
-                    "Security"
+                    "Archive",
+                    "System"
                 ],
                 "risk_level": "Low",
-                "risk_score": 5,
-                "decision_recommendation": "Approve",
-                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
-                "potential_impact": "None expected; enables secure file transfer capability.",
+                "risk_score": 15,
+                "decision_recommendation": "Warn",
+                "risk_reason": "The change is administrative and low-risk, but the presence of an invalid input log indicates a potential configuration syntax issue.",
+                "potential_impact": "Minimal; the configuration change was partially successful, but the invalid command may have been ignored.",
                 "validation_checks": [
-                    "show run | include ip scp",
-                    "Verify SCP connectivity from a management host"
+                    "show archive",
+                    "show running-config | include archive"
                 ],
-                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
-                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "recommended_action": "Verify if the 'file prompt quiet' command was intended to be removed and check for any remaining syntax errors.",
+                "rollback_recommendation": "Rollback is not required unless management access or file operations are impacted.",
                 "anomalies": [
-                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                    "Invalid input detected in logs"
                 ]
             }
         },
         {
             "device_name": "R2",
             "summary": {
-                "headline": "Enabled SCP Server",
-                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
-                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
-                "change_type": "Security Change",
+                "headline": "Interface shutdown and archive configuration update",
+                "executive_summary": "The device configuration was updated to include archive settings, and the GigabitEthernet2 interface was administratively shut down.",
+                "technical_summary": "Added archive configuration and applied 'shutdown' to interface GigabitEthernet2. An invalid input error was logged.",
+                "change_type": "Interface Change",
                 "affected_services": [
-                    "Management Access"
+                    "Routing",
+                    "Management"
                 ],
                 "changed_areas": [
-                    "Security"
+                    "Interface",
+                    "Archive"
                 ],
-                "risk_level": "Low",
-                "risk_score": 5,
-                "decision_recommendation": "Approve",
-                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
-                "potential_impact": "None expected; enables secure file transfer capability.",
+                "risk_level": "High",
+                "risk_score": 75,
+                "decision_recommendation": "Deny",
+                "risk_reason": "Shutting down an active interface (GigabitEthernet2) that serves as an internal routing peer is a high-risk action that will disrupt network connectivity.",
+                "potential_impact": "Likely loss of connectivity to R1 and potential routing instability.",
                 "validation_checks": [
-                    "show run | include ip scp",
-                    "Verify SCP connectivity from a management host"
+                    "show ip interface brief",
+                    "show ip ospf neighbor",
+                    "ping 192.168.1.1"
                 ],
-                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
-                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "recommended_action": "Immediately review the necessity of shutting down the interface and restore it if it was unintentional.",
+                "rollback_recommendation": "Rollback immediately if the interface shutdown was not part of a planned maintenance window.",
                 "anomalies": [
-                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                    "Invalid input detected in logs",
+                    "Unexpected interface shutdown"
                 ]
             }
         },
         {
             "device_name": "R3",
             "summary": {
-                "headline": "Enabled SCP Server",
-                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
-                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
-                "change_type": "Security Change",
+                "headline": "Archive configuration update",
+                "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was logged.",
+                "technical_summary": "Added archive path and maximum file count. An invalid input error was logged.",
+                "change_type": "Telemetry Change",
                 "affected_services": [
-                    "Management Access"
+                    "Management"
                 ],
                 "changed_areas": [
-                    "Security"
+                    "Archive"
                 ],
                 "risk_level": "Low",
-                "risk_score": 5,
+                "risk_score": 10,
                 "decision_recommendation": "Approve",
-                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
-                "potential_impact": "None expected; enables secure file transfer capability.",
+                "risk_reason": "The change is purely administrative and does not affect traffic or routing.",
+                "potential_impact": "None expected.",
                 "validation_checks": [
-                    "show run | include ip scp",
-                    "Verify SCP connectivity from a management host"
+                    "show archive"
                 ],
-                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
-                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "recommended_action": "None.",
+                "rollback_recommendation": "Not required.",
                 "anomalies": [
-                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                    "Invalid input detected in logs"
                 ]
             }
         },
         {
             "device_name": "R4",
             "summary": {
-                "headline": "Enabled SCP Server",
-                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
-                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
-                "change_type": "Security Change",
+                "headline": "Archive configuration update",
+                "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was logged.",
+                "technical_summary": "Added archive path and maximum file count. An invalid input error was logged.",
+                "change_type": "Telemetry Change",
                 "affected_services": [
-                    "Management Access"
+                    "Management"
                 ],
                 "changed_areas": [
-                    "Security"
+                    "Archive"
                 ],
                 "risk_level": "Low",
-                "risk_score": 5,
+                "risk_score": 10,
                 "decision_recommendation": "Approve",
-                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
-                "potential_impact": "None expected; enables secure file transfer capability.",
+                "risk_reason": "The change is purely administrative and does not affect traffic or routing.",
+                "potential_impact": "None expected.",
                 "validation_checks": [
-                    "show run | include ip scp",
-                    "Verify SCP connectivity from a management host"
+                    "show archive"
                 ],
-                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
-                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "recommended_action": "None.",
+                "rollback_recommendation": "Not required.",
                 "anomalies": [
-                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                    "Invalid input detected in logs"
+                ]
+            }
+        },
+        {
+            "device_name": "R5",
+            "summary": {
+                "headline": "Archive configuration update",
+                "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was logged.",
+                "technical_summary": "Added archive path and maximum file count. An invalid input error was logged.",
+                "change_type": "Telemetry Change",
+                "affected_services": [
+                    "Management"
+                ],
+                "changed_areas": [
+                    "Archive"
+                ],
+                "risk_level": "Low",
+                "risk_score": 10,
+                "decision_recommendation": "Approve",
+                "risk_reason": "The change is purely administrative and does not affect traffic or routing.",
+                "potential_impact": "None expected.",
+                "validation_checks": [
+                    "show archive"
+                ],
+                "recommended_action": "None.",
+                "rollback_recommendation": "Not required.",
+                "anomalies": [
+                    "Invalid input detected in logs"
                 ]
             }
         },
         {
             "device_name": "R6",
             "summary": {
-                "headline": "Enabled SCP Server",
-                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
-                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
-                "change_type": "Security Change",
+                "headline": "Archive configuration update",
+                "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was logged.",
+                "technical_summary": "Added archive path and maximum file count. An invalid input error was logged.",
+                "change_type": "Telemetry Change",
                 "affected_services": [
-                    "Management Access"
+                    "Management"
                 ],
                 "changed_areas": [
-                    "Security"
+                    "Archive"
                 ],
                 "risk_level": "Low",
-                "risk_score": 5,
+                "risk_score": 10,
                 "decision_recommendation": "Approve",
-                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
-                "potential_impact": "None expected; enables secure file transfer capability.",
+                "risk_reason": "The change is purely administrative and does not affect traffic or routing.",
+                "potential_impact": "None expected.",
                 "validation_checks": [
-                    "show run | include ip scp",
-                    "Verify SCP connectivity from a management host"
+                    "show archive"
                 ],
-                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
-                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "recommended_action": "None.",
+                "rollback_recommendation": "Not required.",
                 "anomalies": [
-                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                    "Invalid input detected in logs"
                 ]
             }
         },
         {
             "device_name": "R7",
             "summary": {
-                "headline": "Enabled SCP Server",
-                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
-                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
-                "change_type": "Security Change",
+                "headline": "Archive configuration update",
+                "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was logged.",
+                "technical_summary": "Added archive path and maximum file count. An invalid input error was logged.",
+                "change_type": "Telemetry Change",
                 "affected_services": [
-                    "Management Access"
+                    "Management"
                 ],
                 "changed_areas": [
-                    "Security"
+                    "Archive"
                 ],
                 "risk_level": "Low",
-                "risk_score": 5,
+                "risk_score": 10,
                 "decision_recommendation": "Approve",
-                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
-                "potential_impact": "None expected; enables secure file transfer capability.",
+                "risk_reason": "The change is purely administrative and does not affect traffic or routing.",
+                "potential_impact": "None expected.",
                 "validation_checks": [
-                    "show run | include ip scp",
-                    "Verify SCP connectivity from a management host"
+                    "show archive"
                 ],
-                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
-                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "recommended_action": "None.",
+                "rollback_recommendation": "Not required.",
                 "anomalies": [
-                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                    "Invalid input detected in logs"
                 ]
             }
         },
         {
             "device_name": "R8",
             "summary": {
-                "headline": "Enabled SCP Server",
-                "executive_summary": "The device configuration was updated to enable the SCP server, which allows for secure file transfers. This is a standard administrative change with minimal operational risk.",
-                "technical_summary": "Added 'ip scp server enable' to the global configuration.",
-                "change_type": "Security Change",
+                "headline": "Archive configuration update",
+                "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was logged.",
+                "technical_summary": "Added archive path and maximum file count. An invalid input error was logged.",
+                "change_type": "Telemetry Change",
                 "affected_services": [
-                    "Management Access"
+                    "Management"
                 ],
                 "changed_areas": [
-                    "Security"
+                    "Archive"
                 ],
                 "risk_level": "Low",
-                "risk_score": 5,
+                "risk_score": 10,
                 "decision_recommendation": "Approve",
-                "risk_reason": "Enabling SCP is a standard security hardening or management task with no impact on routing or traffic forwarding.",
-                "potential_impact": "None expected; enables secure file transfer capability.",
+                "risk_reason": "The change is purely administrative and does not affect traffic or routing.",
+                "potential_impact": "None expected.",
                 "validation_checks": [
-                    "show run | include ip scp",
-                    "Verify SCP connectivity from a management host"
+                    "show archive"
                 ],
-                "recommended_action": "Verify the change and ensure SCP access is restricted via ACLs if necessary.",
-                "rollback_recommendation": "Remove 'no ip scp server enable' if issues arise, though unlikely.",
+                "recommended_action": "None.",
+                "rollback_recommendation": "Not required.",
                 "anomalies": [
-                    "Invalid input error in logs suggests a potential syntax issue or command rejection during the attempt."
+                    "Invalid input detected in logs"
                 ]
             }
         }
