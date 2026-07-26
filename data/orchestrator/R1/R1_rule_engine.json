@@ -1,70 +1,37 @@
 {
-  "rule_score": 47,
-  "inherent_risk_score": 47,
-  "residual_risk_score": 47,
+  "rule_score": 35,
+  "inherent_risk_score": 0,
+  "residual_risk_score": 35,
   "risk_level": "medium",
   "decision_hint": "manual_review",
   "hard_stop_triggered": false,
   "assessment_status": "incomplete",
-  "confidence": 0.55,
+  "confidence": 0.4,
   "evidence_completeness": 1.0,
   "missing_evidence": [],
-  "findings": [
-    {
-      "rule_id": "OSPF_NETWORK_CHANGE",
-      "description": "Adds or changes OSPF network statement.",
-      "score": 45,
-      "severity": "medium",
-      "affected_areas": [
-        "ospf",
-        "routing"
-      ],
-      "context_type": "router_ospf",
-      "context_name": "router ospf 1",
-      "matched_command": "network 192.168.1.1 0.0.0.0 area 0",
-      "hard_stop": false,
-      "reason": "OSPF network statements may advertise new prefixes or form new adjacencies.",
-      "rule_version": "1.1",
-      "policy_reference": "organizational-network-change-policy"
-    }
-  ],
-  "affected_areas": [
-    "ospf",
-    "routing"
-  ],
+  "findings": [],
+  "affected_areas": [],
   "blast_radius": {
     "level": "site",
-    "affected_area_count": 2,
+    "affected_area_count": 0,
     "critical_infrastructure_context": true,
     "redundancy_verified": false
   },
-  "required_controls": [
-    "Confirm a maintenance window for service-impacting changes.",
-    "Record an approved change ticket and responsible reviewer.",
-    "Verify that a tested rollback procedure is available before deployment."
-  ],
-  "validation_checks": [
-    "Compare the intended configuration with the post-change running configuration.",
-    "show ip ospf neighbor",
-    "show ip route ospf"
-  ],
-  "rollback_actions": [
-    "Restore the previous OSPF statements or interface cost."
-  ],
-  "recognized_commands": 1,
+  "required_controls": [],
+  "validation_checks": [],
+  "rollback_actions": [],
+  "recognized_commands": 0,
   "unrecognized_commands": [
-    "Current configuration : 4199 bytes",
-    "description local-facin-interface",
-    "shutdown"
+    "Current configuration : 4255 bytes"
   ],
   "configuration_diff": [
     "--- current",
     "+++ proposed",
-    "@@ -1,207 +1,6 @@",
+    "@@ -1,210 +1,2 @@",
     "-Building configuration...",
-    " Current configuration : 4199 bytes",
+    " Current configuration : 4255 bytes",
     "-!",
-    "-! Last configuration change at 23:14:34 UTC Wed Jul 22 2026",
+    " ! Last configuration change at 18:44:00 UTC Sat Jul 25 2026",
     "-!",
     "-version 17.3",
     "-service timestamps debug datetime msec",
@@ -139,10 +106,10 @@
     "-  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305",
     "-  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720"
   ],
-  "summary": "Triggered deterministic rule(s): OSPF_NETWORK_CHANGE",
+  "summary": "No deterministic risk rule matched. The result is incomplete and must not be treated as proof that the change is safe.",
   "engine_version": "2.0.0",
   "ruleset_version": "ios-risk-rules-2026.07",
   "policy_profile": "enterprise_network_default",
-  "evaluated_at": "2026-07-22T23:24:03.752830+00:00",
-  "input_sha256": "c6bcac4e8233e88385f9148feee35e76c8c48879b8a27bc4125bc8c1b8ced908"
+  "evaluated_at": "2026-07-25T18:45:47.495233+00:00",
+  "input_sha256": "de41af46ad04e85fa09313722651c94be684b357d1773dce79ab8cdc7eee9f5e"
 }

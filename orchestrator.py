@@ -12,11 +12,16 @@ import json
 import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 
-from src.notifier import send_combined_email_notifications
-from src.utils import load_yaml, load_json, read_text, write_json
+from src.notifier import send_combined_role_notifications
+from src.utils import load_yaml, load_json
+
+# Polling interval between orchestration cycles (seconds).
+# Should be number of devices * 70 seconds to account for polling, cloud, local and scoring time.
+POLL_INTERVAL_SECONDS = 600
 
 
 def run_git_show(path: Path) -> Optional[str]:
@@ -148,23 +153,12 @@ def build_topology_context(device_name: str, topology: dict) -> str:
     return context
 
 
-def main():
-    args = parse_args()
-    settings = load_yaml("configs/settings.yaml")
-    orchestrator_started_at = time.perf_counter()
-    telemetry = {
-        "ai_mode": args.ai_mode or "both",
-        "polling_seconds": None,
-        "cloud_seconds": None,
-        "local_seconds": None,
-        "orchestrator_total_seconds": None,
-    }
-
-    # 1) Run the Nornir-based poller (collects configs, writes diffs, and runs cloud AI)
+def _run_poller(args: argparse.Namespace, telemetry: dict) -> bool:
+    """Run the Nornir poller subprocess and update telemetry. Returns True on success."""
     poller_script = Path("src/poller_nornir.py")
     if not poller_script.exists():
         print("Required Nornir poller not found: src/poller_nornir.py. Aborting.")
-        return
+        return False
     poller_cmd = [sys.executable, str(poller_script)]
     if args.dry_run:
         poller_cmd.append("--dry-run")
@@ -185,217 +179,299 @@ def main():
             telemetry["polling_seconds"] = poller_metrics["polling_seconds"]
         if poller_metrics.get("cloud_seconds") is not None:
             telemetry["cloud_seconds"] = poller_metrics["cloud_seconds"]
+    return True
 
-    # 2) Locate diff files produced by the poller
+
+def _run_rule_engine(
+    device_name: str,
+    proposed_change: str,
+    diff_text: str,
+    prev_config: Optional[str],
+    topology_context: str,
+    role: Optional[str],
+    rule_out: Path,
+) -> bool:
+    """Run the rule engine for a device and save the result. Returns True on success."""
+    try:
+        from src.rule_engine_v3 import evaluate_change, save_result_to_json_file
+
+        rule_result = evaluate_change(
+            proposed_change=proposed_change or diff_text,
+            current_config=prev_config,
+            topology_context=topology_context,
+            device_role=role,
+            proposed_full_config=False,
+        )
+        save_result_to_json_file(rule_result, str(rule_out))
+        print(f"Rule-engine output saved to: {rule_out}")
+        return True
+    except Exception as exc:
+        print(f"Rule engine failed for {device_name}: {exc}")
+        return False
+
+
+def _extract_cloud_ai(
+    device_name: str,
+    diff_file: Path,
+    cloud_batch: Optional[dict],
+    cloud_batch_path: Path,
+    cloud_out: Path,
+    args: argparse.Namespace,
+) -> None:
+    """Extract cloud AI summary for a device from the batch output."""
+    cloud_summary = find_cloud_summary(device_name, cloud_batch)
+    if cloud_summary is not None and should_run_output(cloud_out, args.force, source=diff_file):
+        try:
+            cloud_out.write_text(json.dumps(cloud_summary, indent=2), encoding="utf-8")
+            print(f"Cloud AI output extracted to: {cloud_out}")
+        except Exception as exc:
+            print(f"Failed to write cloud AI output for {device_name}: {exc}")
+    elif cloud_summary is None:
+        if cloud_batch_path.exists():
+            print(f"Cloud batch exists but no entry for {device_name} was found.")
+        else:
+            print("No cloud batch output found (gemini_batch_output.json).")
+    else:
+        print(f"Skipping cloud extraction for {device_name}; {cloud_out} is up to date.")
+
+
+def _run_local_ai(
+    device_name: str,
+    cfg_path: Path,
+    proposed_text: str,
+    local_out: Path,
+    args: argparse.Namespace,
+    telemetry: dict,
+) -> bool:
+    """Run the local AI model for a device. Returns True on success."""
+    write_text_if_changed(cfg_path, proposed_text)
+    if not should_run_output(local_out, args.force, source=cfg_path):
+        print(f"Skipping local AI for {device_name}; {local_out} is up to date.")
+        return True
+    try:
+        local_started_at = time.perf_counter()
+        local_cmd = [
+            sys.executable,
+            "risk_qwen_v2.py",
+            "--config-file",
+            str(cfg_path),
+            "--output-file",
+            str(local_out),
+        ]
+        run_cmd(local_cmd)
+        elapsed = round(time.perf_counter() - local_started_at, 3)
+        current_local = telemetry.get("local_seconds") or 0.0
+        telemetry["local_seconds"] = round(current_local + elapsed, 3)
+        print(f"Local AI output saved to: {local_out} in {elapsed}s")
+        return True
+    except Exception as exc:
+        print(f"Local AI failed for {device_name}: {exc}")
+        return False
+
+
+def _run_scoring(
+    device_name: str,
+    final_out: Path,
+    diff_file: Path,
+    local_out: Path,
+    rule_out: Path,
+    cloud_out: Path,
+    cloud_batch_path: Path,
+    args: argparse.Namespace,
+) -> bool:
+    """Run the scoring engine for a device. Returns True on success."""
+    should_run_cloud = args.ai_mode in {"both", "cloud"}
+    if not should_run_output(final_out, args.force, source=diff_file):
+        print(f"Skipping scoring for {device_name}; {final_out} already exists and is up to date.")
+        return True
+    if not local_out.exists():
+        print(f"Skipping scoring for {device_name}; local AI result missing.")
+        return False
+    if not rule_out.exists():
+        print(f"Skipping scoring for {device_name}; rule engine result missing.")
+        return False
+    if not cloud_out.exists() and not args.force and should_run_cloud:
+        print(f"Skipping scoring for {device_name}; cloud output missing and force not set.")
+        return False
+    try:
+        scoring_cmd = [
+            sys.executable,
+            "scoring_engine.py",
+            "--cloud",
+            str(cloud_out) if cloud_out.exists() else str(cloud_batch_path),
+            "--local",
+            str(local_out),
+            "--rules",
+            str(rule_out),
+            "--output",
+            str(final_out),
+        ]
+        run_cmd(scoring_cmd)
+        print(f"Final score output saved to: {final_out}")
+        return True
+    except Exception as exc:
+        print(f"Scoring engine failed for {device_name}: {exc}")
+        return False
+
+
+def _process_device(
+    device_name: str,
+    diff_file: Path,
+    args: argparse.Namespace,
+    settings: dict,
+    topology: dict,
+    hosts: dict,
+    cloud_batch: Optional[dict],
+    cloud_batch_path: Path,
+    telemetry: dict,
+) -> Optional[dict]:
+    """Run all processing steps for a single device. Returns the result dict on scoring success, None otherwise."""
+    print(f"\n--- Processing device: {device_name} (diff: {diff_file})")
+
+    diff_text = diff_file.read_text(encoding="utf-8")
+    proposed_change, _ = extract_added_removed_from_diff(diff_text)
+
+    out_dir = Path("data") / "orchestrator" / device_name
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rule_out = out_dir / f"{device_name}_rule_engine.json"
+    local_out = out_dir / f"{device_name}_local_ai.json"
+    cloud_out = out_dir / f"{device_name}_cloud_ai.json"
+    final_out = out_dir / f"{device_name}_final_score.json"
+
+    # Step 3: Rule engine
+    topology_context = build_topology_context(device_name, topology)
+    role = hosts.get(device_name, {}).get("data", {}).get("role") if isinstance(hosts, dict) else None
+
+    current_config_dir = Path(settings.get("storage", {}).get("current_config_path", "data/configs/current"))
+    current_file = current_config_dir / f"{device_name}.cfg"
+    prev_config = run_git_show(current_file)
+    if not prev_config:
+        archive_dir = (
+            Path(settings.get("storage", {}).get("archive_config_path", "data/configs/archive"))
+            / device_name
+        )
+        try:
+            archives = sorted(archive_dir.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True)
+            if archives:
+                prev_config = archives[0].read_text(encoding="utf-8")
+        except Exception:
+            prev_config = None
+
+    if not _run_rule_engine(device_name, proposed_change, diff_text, prev_config, topology_context, role, rule_out):
+        return None
+
+    should_run_cloud = args.ai_mode in {"both", "cloud"}
+    should_run_local = args.ai_mode in {"both", "local"}
+
+    # Step 4: Cloud AI
+    if should_run_cloud:
+        _extract_cloud_ai(device_name, diff_file, cloud_batch, cloud_batch_path, cloud_out, args)
+    else:
+        print(f"AI mode '{args.ai_mode}' skips cloud AI for {device_name}.")
+
+    # Step 5: Local AI + Scoring
+    if args.dry_run:
+        print(f"Dry-run: skipping local AI and scoring for {device_name}.")
+        return None
+
+    if not should_run_local:
+        print(f"AI mode '{args.ai_mode}' skips local AI for {device_name}; skipping scoring.")
+        return None
+
+    cfg_path = out_dir / f"{device_name}_proposed.cfg"
+    if not _run_local_ai(device_name, cfg_path, proposed_change or diff_text, local_out, args, telemetry):
+        return None
+
+    if not _run_scoring(device_name, final_out, diff_file, local_out, rule_out, cloud_out, cloud_batch_path, args):
+        return None
+
+    # Step 6: Load result; combined notification is sent after the full cycle completes
+    try:
+        return json.loads(final_out.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"Failed reading final score output for {device_name}: {exc}")
+        return None
+
+
+def main():
+    args = parse_args()
+    settings = load_yaml("configs/settings.yaml")
+    orchestrator_started_at = time.perf_counter()
+    telemetry = {
+        "ai_mode": args.ai_mode or "both",
+        "polling_seconds": None,
+        "cloud_seconds": None,
+        "local_seconds": None,
+        "orchestrator_total_seconds": None,
+    }
+
+    if not _run_poller(args, telemetry):
+        return
+
     diff_root = Path(settings["storage"]["diff_path"])
     topology = load_json("configs/topology.json")
 
-    # Load hosts roles if available
     try:
         hosts = load_yaml("inventory/hosts.yaml")
     except Exception:
         hosts = {}
 
-    # Load cloud batch output if present
     cloud_batch_path = Path("gemini_batch_output.json")
     cloud_batch = None
     if cloud_batch_path.exists():
         cloud_batch = json.loads(cloud_batch_path.read_text(encoding="utf-8"))
 
-    # Iterate only the latest diff file per device
     diffs = list(diff_root.rglob("*.diff"))
     latest_diffs = select_latest_diffs(diffs, device=args.device)
     if not latest_diffs:
         print("No diff files found; nothing to do.")
         return
 
-    pending_notifications: List[dict] = []
-
+    device_results: dict = {}
     for diff_file in latest_diffs:
         device_name = diff_file.stem.split("_")[0]
         if args.device and device_name != args.device:
             continue
-
-        print(f"\n--- Processing device: {device_name} (diff: {diff_file})")
-
-        diff_text = diff_file.read_text(encoding="utf-8")
-        proposed_change, current_config = extract_added_removed_from_diff(diff_text)
-
-        # Prepare file paths for intermediate outputs
-        out_dir = Path("data") / "orchestrator" / device_name
-        out_dir.mkdir(parents=True, exist_ok=True)
-        rule_out = out_dir / f"{device_name}_rule_engine.json"
-        local_out = out_dir / f"{device_name}_local_ai.json"
-        cloud_out = out_dir / f"{device_name}_cloud_ai.json"
-        final_out = out_dir / f"{device_name}_final_score.json"
-
-        # 3) Rule engine: import and run evaluate_change
-        try:
-            from src.rule_engine_v3 import evaluate_change, save_result_to_json_file
-
-            topology_context = build_topology_context(device_name, topology)
-            role = hosts.get(device_name, {}).get("data", {}).get("role") if isinstance(hosts, dict) else None
-
-            # Attempt to retrieve the full previous config as context for the rule engine.
-            current_config_dir = Path(settings.get("storage", {}).get("current_config_path", "data/configs/current"))
-            current_file = current_config_dir / f"{device_name}.cfg"
-
-            prev_config = run_git_show(current_file)
-            if not prev_config:
-                # Fallback: try the archive directory and pick the most recent file for the device.
-                archive_dir = Path(settings.get("storage", {}).get("archive_config_path", "data/configs/archive")) / device_name
-                try:
-                    archives = sorted(archive_dir.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True)
-                    if archives:
-                        prev_config = archives[0].read_text(encoding="utf-8")
-                except Exception:
-                    prev_config = None
-
-            rule_result = evaluate_change(
-                proposed_change=proposed_change or diff_text,
-                current_config=prev_config,
-                topology_context=topology_context,
-                device_role=role,
-                proposed_full_config=False,
-            )
-
-            save_result_to_json_file(rule_result, str(rule_out))
-            print(f"Rule-engine output saved to: {rule_out}")
-        except Exception as exc:
-            print(f"Rule engine failed for {device_name}: {exc}")
-            continue
-
-        should_run_cloud = args.ai_mode in {"both", "cloud"}
-        should_run_local = args.ai_mode in {"both", "local"}
-
-        # 4) Cloud AI: extract single-device summary from gemini batch output if available
-        if should_run_cloud:
-            cloud_summary = find_cloud_summary(device_name, cloud_batch)
-            if cloud_summary is not None and should_run_output(cloud_out, args.force, source=diff_file):
-                try:
-                    cloud_out.write_text(json.dumps(cloud_summary, indent=2), encoding="utf-8")
-                    print(f"Cloud AI output extracted to: {cloud_out}")
-                except Exception as exc:
-                    print(f"Failed to write cloud AI output for {device_name}: {exc}")
-            elif cloud_summary is None:
-                if cloud_batch_path.exists():
-                    print(f"Cloud batch exists but no entry for {device_name} was found.")
-                else:
-                    print("No cloud batch output found (gemini_batch_output.json).")
-            else:
-                print(f"Skipping cloud extraction for {device_name}; {cloud_out} is up to date.")
-        else:
-            print(f"AI mode '{args.ai_mode}' skips cloud AI for {device_name}.")
-
-        # 5) Local AI + Scoring: skip during dry-run to avoid heavy model loads
-        if args.dry_run:
-            print(f"Dry-run: skipping local AI and scoring for {device_name}.")
-            continue
-
-        if not should_run_local:
-            print(f"AI mode '{args.ai_mode}' skips local AI for {device_name}; skipping scoring.")
-            continue
-
-        # 5a) Local AI only if needed
-        cfg_path = out_dir / f"{device_name}_proposed.cfg"
-        proposed_text = proposed_change or diff_text
-        write_text_if_changed(cfg_path, proposed_text)
-
-        if should_run_output(local_out, args.force, source=cfg_path):
-            try:
-                local_started_at = time.perf_counter()
-                local_cmd = [
-                    sys.executable,
-                    "risk_qwen_v2.py",
-                    "--config-file",
-                    str(cfg_path),
-                    "--output-file",
-                    str(local_out),
-                ]
-                run_cmd(local_cmd)
-                elapsed = round(time.perf_counter() - local_started_at, 3)
-                current_local = telemetry.get("local_seconds") or 0.0
-                telemetry["local_seconds"] = round(current_local + elapsed, 3)
-                print(f"Local AI output saved to: {local_out} in {elapsed}s")
-            except Exception as exc:
-                print(f"Local AI failed for {device_name}: {exc}")
-        else:
-            print(f"Skipping local AI for {device_name}; {local_out} is up to date.")
-
-        # 5b) Scoring only if local and rule results exist
-        if not should_run_output(final_out, args.force, source=diff_file):
-            print(f"Skipping scoring for {device_name}; {final_out} already exists and is up to date.")
-            continue
-
-        if not local_out.exists():
-            print(f"Skipping scoring for {device_name}; local AI result missing.")
-            continue
-
-        if not rule_out.exists():
-            print(f"Skipping scoring for {device_name}; rule engine result missing.")
-            continue
-
-        if not cloud_out.exists() and not args.force and should_run_cloud:
-            print(f"Skipping scoring for {device_name}; cloud output missing and force not set.")
-            continue
-
-        try:
-            scoring_cmd = [
-                sys.executable,
-                "scoring_engine.py",
-                "--cloud",
-                str(cloud_out) if cloud_out.exists() else str(cloud_batch_path),
-                "--local",
-                str(local_out),
-                "--rules",
-                str(rule_out),
-                "--output",
-                str(final_out),
-            ]
-
-            run_cmd(scoring_cmd)
-            print(f"Final score output saved to: {final_out}")
-        except Exception as exc:
-            print(f"Scoring engine failed for {device_name}: {exc}")
-            continue
-
-        # 6) Queue notification data — email will be sent once after the loop
-        try:
-            notification_data = json.loads(final_out.read_text(encoding="utf-8"))
-            notification = notification_data.get("notification")
-            if notification:
-                pending_notifications.append({
-                    "device_name": device_name,
-                    "subject": notification.get("title", f"Network change decision for {device_name}"),
-                    "body": notification.get("message", "No notification body available."),
-                })
-                print(f"Queued email notification for {device_name}")
-            else:
-                print(f"No notification payload in final score output for {device_name}")
-        except Exception as exc:
-            print(f"Failed queuing email notification for {device_name}: {exc}")
-
-    # 7) Send a single combined email for all changed devices
-    if pending_notifications:
-        num = len(pending_notifications)
-        device_list = ", ".join(n["device_name"] for n in pending_notifications)
-        combined_subject = f"[NetConfig AI] Network changes detected on {num} device(s): {device_list}"
-        combined_body = "\n\n".join(
-            f"=== {n['device_name']} ===\n{n['body']}" for n in pending_notifications
+        result = _process_device(
+            device_name, diff_file, args, settings, topology, hosts,
+            cloud_batch, cloud_batch_path, telemetry,
         )
+        if result is not None:
+            device_results[device_name] = result
+
+    if device_results:
         try:
-            sent = send_combined_email_notifications(settings, {}, combined_subject, combined_body)
+            sent = send_combined_role_notifications(settings, device_results)
             if sent:
-                print(f"Combined email notification sent for {num} device(s): {device_list}")
+                print(f"Combined role-based emails sent for: {', '.join(device_results)}")
             else:
                 print("Email notifications disabled or no recipients configured.")
         except Exception as exc:
-            print(f"Failed sending combined email notification: {exc}")
+            print(f"Failed sending combined email notifications: {exc}")
 
     telemetry["orchestrator_total_seconds"] = round(time.perf_counter() - orchestrator_started_at, 3)
     metrics_path = persist_metrics(telemetry, Path("data/telemetry"))
     print(f"Telemetry saved to: {metrics_path}")
 
 
+def run_forever():
+    print("[+] Orchestrator polling loop started")
+    while True:
+        settings = load_yaml("configs/settings.yaml")
+        poll_interval = int(
+            settings.get("polling", {}).get("interval_seconds", POLL_INTERVAL_SECONDS)
+        )
+        cycle_start = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"\n[+] Starting orchestration cycle at {cycle_start}")
+        print(f"[+] Poll interval: {poll_interval} seconds")
+        try:
+            main()
+            print("[+] Orchestration cycle completed successfully")
+        except Exception as e:
+            print(f"[!] Orchestration cycle failed: {e}")
+        print(f"[+] Sleeping for {poll_interval} seconds...")
+        time.sleep(poll_interval)
+
+
 if __name__ == "__main__":
-    main()
+    run_forever()

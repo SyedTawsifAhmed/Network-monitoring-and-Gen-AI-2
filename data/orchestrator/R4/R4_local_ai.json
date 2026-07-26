@@ -1,68 +1,65 @@
 {
   "schema_version": "1.0",
-  "assessment_id": "54a9f294-8d0e-40d5-97c0-08b2a8434aa7",
-  "generated_at": "2026-07-22T00:09:02.598068+00:00",
-  "input_sha256": "4d63f0214de9b83da41ba9141357ccee52dc90131cba37b7e4d31f6e767038e6",
+  "assessment_id": "da45d9d6-910d-4bd4-823f-8145c8fde230",
+  "generated_at": "2026-07-25T18:54:09.026109+00:00",
+  "input_sha256": "704726da5a55ce899c678e962f126c3533f74cd8e7e44724a5c3f7aff0b57193",
   "risk": {
-    "score": 85,
-    "level": "critical",
-    "model_score": 85,
+    "score": 0,
+    "level": "low",
+    "model_score": 0,
     "deterministic_floor": 0,
     "deterministic_floor_applied": false,
     "score_source": "model"
   },
   "decision": {
-    "approval_required": true,
-    "auto_approval_allowed": false,
-    "recommended_action": "Implement strict access controls, enable encryption for data in transit, and conduct regular security audits."
+    "approval_required": false,
+    "auto_approval_allowed": true,
+    "recommended_action": "no action required"
   },
   "change": {
     "detected_operations": [
-      "interface_description"
+      "other"
     ],
     "destructive_operations": [],
-    "affected_areas": [
-      "network security",
-      "data integrity"
-    ]
+    "affected_areas": []
   },
-  "reason": "The configuration allows unrestricted access to critical systems, exposing the network to potential breaches and data manipulation.",
+  "reason": "No configuration changes detected in the proposed network configuration.",
   "retrieval_evidence": [
     {
-      "sample_id": "LOW_0043",
-      "category": "interface_description",
-      "sample_risk_score": 9,
-      "sample_risk_level": "low",
-      "operations": [
-        "interface_description"
-      ],
-      "semantic_similarity": 0.778,
-      "operation_similarity": 1.0,
-      "combined_score": 0.939
-    },
-    {
-      "sample_id": "LOW_0028",
-      "category": "interface_description",
-      "sample_risk_score": 8,
-      "sample_risk_level": "low",
-      "operations": [
-        "interface_description"
-      ],
-      "semantic_similarity": 0.774,
-      "operation_similarity": 1.0,
-      "combined_score": 0.937
-    },
-    {
-      "sample_id": "MEDIUM_0089",
+      "sample_id": "MEDIUM_0135",
       "category": "interface_ip_change",
-      "sample_risk_score": 55,
+      "sample_risk_score": 51,
       "sample_risk_level": "high",
       "operations": [
         "interface_ip_change"
       ],
-      "semantic_similarity": 0.689,
+      "semantic_similarity": 0.502,
       "operation_similarity": 0.0,
-      "combined_score": 0.344
+      "combined_score": 0.251
+    },
+    {
+      "sample_id": "MEDIUM_0125",
+      "category": "interface_ip_change",
+      "sample_risk_score": 50,
+      "sample_risk_level": "medium",
+      "operations": [
+        "interface_ip_change"
+      ],
+      "semantic_similarity": 0.501,
+      "operation_similarity": 0.0,
+      "combined_score": 0.251
+    },
+    {
+      "sample_id": "MEDIUM_0113",
+      "category": "snmp_community_change",
+      "sample_risk_score": 55,
+      "sample_risk_level": "high",
+      "operations": [
+        "snmp_community_change"
+      ],
+      "semantic_similarity": 0.501,
+      "operation_similarity": 0.0,
+      "combined_score": 0.25
     }
   ],
   "engine_metadata": {

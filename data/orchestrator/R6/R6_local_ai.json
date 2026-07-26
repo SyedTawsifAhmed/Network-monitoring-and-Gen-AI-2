@@ -1,20 +1,20 @@
 {
   "schema_version": "1.0",
-  "assessment_id": "3e7c5362-397e-45d7-94ff-f592bbc1dd0d",
-  "generated_at": "2026-07-22T23:18:33.340427+00:00",
-  "input_sha256": "7038ab54a1b3bf5ab4ca8671044c28350d6ed8bfec70b25829f03fdbb7dde4de",
+  "assessment_id": "53578b0b-1e09-4e88-8b95-7e7df5dead30",
+  "generated_at": "2026-07-25T18:56:42.554456+00:00",
+  "input_sha256": "2715f42b54f27f9dc96f73643785f3ce7f459841159fb3df40febdc0990dff31",
   "risk": {
-    "score": 50,
-    "level": "medium",
-    "model_score": 50,
+    "score": 0,
+    "level": "low",
+    "model_score": 0,
     "deterministic_floor": 0,
     "deterministic_floor_applied": false,
     "score_source": "model"
   },
   "decision": {
     "approval_required": false,
-    "auto_approval_allowed": false,
-    "recommended_action": "warn"
+    "auto_approval_allowed": true,
+    "recommended_action": "approve"
   },
   "change": {
     "detected_operations": [
@@ -22,25 +22,11 @@
     ],
     "destructive_operations": [],
     "affected_areas": [
-      "interface",
-      "routing",
-      "connectivity"
+      "archive"
     ]
   },
-  "reason": "Changing interface addressing can affect directly connected reachability and routing adjacencies.",
+  "reason": "No configuration changes detected. The proposed change is identical to the current configuration.",
   "retrieval_evidence": [
-    {
-      "sample_id": "MEDIUM_0125",
-      "category": "interface_ip_change",
-      "sample_risk_score": 50,
-      "sample_risk_level": "medium",
-      "operations": [
-        "interface_ip_change"
-      ],
-      "semantic_similarity": 0.632,
-      "operation_similarity": 0.0,
-      "combined_score": 0.316
-    },
     {
       "sample_id": "MEDIUM_0135",
       "category": "interface_ip_change",
@@ -49,22 +35,33 @@
       "operations": [
         "interface_ip_change"
       ],
-      "semantic_similarity": 0.627,
+      "semantic_similarity": 0.505,
       "operation_similarity": 0.0,
-      "combined_score": 0.314
+      "combined_score": 0.253
     },
     {
-      "sample_id": "LOW_0061",
-      "category": "add_loopback_not_advertised",
-      "sample_risk_score": 17,
+      "sample_id": "MEDIUM_0125",
+      "category": "interface_ip_change",
+      "sample_risk_score": 50,
+      "sample_risk_level": "medium",
+      "operations": [
+        "interface_ip_change"
+      ],
+      "semantic_similarity": 0.504,
+      "operation_similarity": 0.0,
+      "combined_score": 0.252
+    },
+    {
+      "sample_id": "LOW_0015",
+      "category": "interface_description",
+      "sample_risk_score": 7,
       "sample_risk_level": "low",
       "operations": [
-        "interface_ip_change",
-        "add_loopback_not_advertised"
+        "interface_description"
       ],
-      "semantic_similarity": 0.614,
+      "semantic_similarity": 0.498,
       "operation_similarity": 0.0,
-      "combined_score": 0.307
+      "combined_score": 0.249
     }
   ],
   "engine_metadata": {

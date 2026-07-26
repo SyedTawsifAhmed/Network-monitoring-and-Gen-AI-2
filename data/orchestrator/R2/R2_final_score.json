@@ -1,77 +1,83 @@
 {
-  "generated_at": "2026-07-22T23:20:59.636542+00:00",
-  "final_score": 17.5,
-  "risk_level": "low",
-  "decision": "warn",
-  "decision_reason": "The change is not blocked, but its potential impact should be acknowledged.",
-  "weighted_score_before_overrides": 17.5,
+  "generated_at": "2026-07-25T18:52:03.208509+00:00",
+  "final_score": 52.0,
+  "risk_level": "high",
+  "decision": "deny",
+  "decision_reason": "The change is routine and remained within the low-risk threshold.",
+  "weighted_score_before_overrides": 52.0,
   "weights": {
     "cloud_ai": 0.25,
     "local_ai": 0.35,
     "rule_engine": 0.4
   },
   "source_scores": {
-    "cloud_ai": 0.0,
-    "local_ai": 50.0,
-    "rule_engine": 0.0
+    "cloud_ai": 75.0,
+    "local_ai": 55.0,
+    "rule_engine": 35.0
   },
   "source_levels": {
-    "cloud_ai": "low",
-    "local_ai": "medium",
-    "rule_engine": "low"
+    "cloud_ai": "high",
+    "local_ai": "high",
+    "rule_engine": "medium"
   },
   "source_decision_hints": {
-    "cloud_ai": "approve",
-    "local_ai": "warn",
-    "rule_engine": "approve"
+    "cloud_ai": "deny",
+    "local_ai": "approve_with_senior_approval_required",
+    "rule_engine": "manual_review"
   },
   "source_reasons": {
     "cloud_ai": [
-      "The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.",
-      "None"
+      "Shutting down an active interface (GigabitEthernet2) that serves as an internal routing peer is a high-risk action that will disrupt network connectivity.",
+      "Likely loss of connectivity to R1 and potential routing instability."
     ],
     "local_ai": [
-      "Changing interface addressing can affect directly connected reachability and routing adjacencies."
+      "The proposed change involves shutting down an interface, which could disrupt connectivity and routing if the interface is part of a critical link or serves as a primary uplink. The blast radius depends on the topology, but without specific context, the risk is considered high."
     ],
     "rule_engine": []
   },
   "source_affected_areas": {
     "cloud_ai": [
-      "System",
-      "None"
+      "Interface",
+      "Archive",
+      "Routing",
+      "Management"
     ],
     "local_ai": [
       "interface",
-      "routing",
-      "connectivity"
+      "connectivity",
+      "routing"
     ],
     "rule_engine": []
   },
   "source_destructive_operations": {
     "cloud_ai": [],
-    "local_ai": [],
+    "local_ai": [
+      "interface_shutdown"
+    ],
     "rule_engine": []
   },
   "overrides_applied": [],
   "hard_stop_triggered": false,
-  "destructive_operations": [],
+  "destructive_operations": [
+    "interface_shutdown"
+  ],
   "affected_areas": [
-    "System",
-    "None",
-    "interface",
-    "routing",
+    "Interface",
+    "Archive",
+    "Routing",
+    "Management",
     "connectivity"
   ],
   "supporting_reasons": [
-    "The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.",
-    "None",
-    "Changing interface addressing can affect directly connected reachability and routing adjacencies."
+    "Shutting down an active interface (GigabitEthernet2) that serves as an internal routing peer is a high-risk action that will disrupt network connectivity.",
+    "Likely loss of connectivity to R1 and potential routing instability.",
+    "The proposed change involves shutting down an interface, which could disrupt connectivity and routing if the interface is part of a critical link or serves as a primary uplink. The blast radius depends on the topology, but without specific context, the risk is considered high."
   ],
   "notification": {
-    "severity": "low",
-    "title": "[LOW] Network change decision: Warn",
-    "message": "Final risk score: 17.5/100.\nOverall decision: Warn.\n\nCloud AI summary:\n  - Score: 0.0\n  - Risk level: low\n  - Recommendation: approve\n  - Key findings: The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.; None\n  - Changed or affected areas: System; None\n\nLocal AI summary:\n  - Score: 50.0\n  - Risk level: medium\n  - Recommendation: warn\n  - Key findings: Changing interface addressing can affect directly connected reachability and routing adjacencies.\n  - Changed or affected areas: interface; routing; connectivity\n  - Destructive operations: None noted\n\nRule-engine summary:\n  - Score: 0.0\n  - Risk level: low\n  - Decision hint: approve\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: System; None; interface; routing; connectivity\nSupporting reasons: The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.; None; Changing interface addressing can affect directly connected reachability and routing adjacencies.\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
-    "requires_acknowledgement": false
+    "severity": "high",
+    "title": "[HIGH] Network change decision: Deny",
+    "message": "Final risk score: 52.0/100.\nOverall decision: Deny.\n\nCloud AI summary:\n  - Score: 75.0\n  - Risk level: high\n  - Recommendation: deny\n  - Key findings: Shutting down an active interface (GigabitEthernet2) that serves as an internal routing peer is a high-risk action that will disrupt network connectivity.; Likely loss of connectivity to R1 and potential routing instability.\n  - Changed or affected areas: Interface; Archive; Routing; Management\n\nLocal AI summary:\n  - Score: 55.0\n  - Risk level: high\n  - Recommendation: approve_with_senior_approval_required\n  - Key findings: The proposed change involves shutting down an interface, which could disrupt connectivity and routing if the interface is part of a critical link or serves as a primary uplink. The blast radius depends on the topology, but without specific context, the risk is considered high.\n  - Changed or affected areas: interface; connectivity; routing\n  - Destructive operations: interface_shutdown\n\nRule-engine summary:\n  - Score: 35.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Interface; Archive; Routing; Management; connectivity\nSupporting reasons: Shutting down an active interface (GigabitEthernet2) that serves as an internal routing peer is a high-risk action that will disrupt network connectivity.; Likely loss of connectivity to R1 and potential routing instability.; The proposed change involves shutting down an interface, which could disrupt connectivity and routing if the interface is part of a critical link or serves as a primary uplink. The blast radius depends on the topology, but without specific context, the risk is considered high.\nDestructive operations detected: interface_shutdown\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
+    "requires_acknowledgement": true
   },
   "notification_delivery": {
     "channel": "console",

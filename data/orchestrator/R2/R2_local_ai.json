@@ -1,70 +1,71 @@
 {
   "schema_version": "1.0",
-  "assessment_id": "cda914e3-8353-4757-9d41-df304ce40d4f",
-  "generated_at": "2026-07-22T23:20:57.879952+00:00",
-  "input_sha256": "e2c6e50487d3dd65f8fac01721c8c9ad842a51d0d566cf95a43f1246d66ba0d9",
+  "assessment_id": "87fde3ae-6d9a-41f8-be5a-0cf048bc2dc7",
+  "generated_at": "2026-07-25T18:52:01.137613+00:00",
+  "input_sha256": "8b000709b0a6f8db629dd4f24a7ac8aefb15ca8dbac0f69fcd1cad187e414ebd",
   "risk": {
-    "score": 50,
-    "level": "medium",
-    "model_score": 50,
-    "deterministic_floor": 0,
+    "score": 55,
+    "level": "high",
+    "model_score": 55,
+    "deterministic_floor": 55,
     "deterministic_floor_applied": false,
     "score_source": "model"
   },
   "decision": {
-    "approval_required": false,
+    "approval_required": true,
     "auto_approval_allowed": false,
-    "recommended_action": "warn"
+    "recommended_action": "approve_with_senior_approval_required"
   },
   "change": {
     "detected_operations": [
-      "other"
+      "interface_shutdown"
     ],
-    "destructive_operations": [],
+    "destructive_operations": [
+      "interface_shutdown"
+    ],
     "affected_areas": [
       "interface",
-      "routing",
-      "connectivity"
+      "connectivity",
+      "routing"
     ]
   },
-  "reason": "Changing interface addressing can affect directly connected reachability and routing adjacencies.",
+  "reason": "The proposed change involves shutting down an interface, which could disrupt connectivity and routing if the interface is part of a critical link or serves as a primary uplink. The blast radius depends on the topology, but without specific context, the risk is considered high.",
   "retrieval_evidence": [
     {
-      "sample_id": "MEDIUM_0125",
-      "category": "interface_ip_change",
-      "sample_risk_score": 50,
-      "sample_risk_level": "medium",
+      "sample_id": "HIGH_0237",
+      "category": "interface_shutdown_critical",
+      "sample_risk_score": 87,
+      "sample_risk_level": "critical",
       "operations": [
-        "interface_ip_change"
+        "interface_shutdown"
       ],
-      "semantic_similarity": 0.631,
-      "operation_similarity": 0.0,
-      "combined_score": 0.315
+      "semantic_similarity": 0.811,
+      "operation_similarity": 1.0,
+      "combined_score": 1.156
     },
     {
-      "sample_id": "MEDIUM_0135",
-      "category": "interface_ip_change",
-      "sample_risk_score": 51,
-      "sample_risk_level": "high",
+      "sample_id": "HIGH_0281",
+      "category": "interface_shutdown_critical",
+      "sample_risk_score": 93,
+      "sample_risk_level": "critical",
       "operations": [
-        "interface_ip_change"
+        "interface_shutdown"
       ],
-      "semantic_similarity": 0.625,
-      "operation_similarity": 0.0,
-      "combined_score": 0.312
+      "semantic_similarity": 0.809,
+      "operation_similarity": 1.0,
+      "combined_score": 1.154
     },
     {
-      "sample_id": "LOW_0061",
-      "category": "add_loopback_not_advertised",
-      "sample_risk_score": 17,
+      "sample_id": "LOW_0043",
+      "category": "interface_description",
+      "sample_risk_score": 9,
       "sample_risk_level": "low",
       "operations": [
-        "interface_ip_change",
-        "add_loopback_not_advertised"
+        "interface_description"
       ],
-      "semantic_similarity": 0.616,
+      "semantic_similarity": 0.521,
       "operation_similarity": 0.0,
-      "combined_score": 0.308
+      "combined_score": 0.261
     }
   ],
   "engine_metadata": {

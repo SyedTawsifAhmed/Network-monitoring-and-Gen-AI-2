@@ -7,7 +7,7 @@ polling:
   enabled: true
   command_config: "show running-config"
   command_logs: "show logging | last 50"
-  interval_seconds: 300
+  interval_seconds: 600
 
 storage:
   current_config_path: "data/configs/current"
@@ -38,9 +38,11 @@ notifications:
     groups:
       executive:
         recipients:
+          - syed.tawsif.ahmed@torontomu.ca
       technical_manager:
         recipients:
-      engineer:
+          - syed.tawsif.ahmed@torontomu.ca
+      engineering:
         recipients:
           - syed.tawsif.ahmed@torontomu.ca
           - simrat.s.gill@torontomu.ca

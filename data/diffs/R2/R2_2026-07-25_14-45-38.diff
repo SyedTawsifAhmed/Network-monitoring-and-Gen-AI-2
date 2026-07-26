@@ -1,0 +1,32 @@
+diff --git a/data/configs/current/R2.cfg b/data/configs/current/R2.cfg
+index 0df50d9..82f80c5 100644
+--- a/data/configs/current/R2.cfg
++++ b/data/configs/current/R2.cfg
+@@ -1,7 +1,7 @@
+ Building configuration...
+-Current configuration : 4287 bytes
++Current configuration : 4342 bytes
+ !
+-! Last configuration change at 01:33:20 UTC Fri Jul 24 2026
++! Last configuration change at 18:44:21 UTC Sat Jul 25 2026
+ !
+ version 17.3
+ service timestamps debug datetime msec
+@@ -100,6 +100,9 @@ crypto pki certificate chain SLA-TrustPoint
+ !
+ license udi pid CSR1000V sn 95689PCZPWL
+ diagnostic bootup level minimal
++archive
++ path bootflash:/archive
++ maximum 14
+ memory free low-watermark processor 71464
+ !
+ !
+@@ -142,6 +145,7 @@ interface GigabitEthernet1
+ !
+ interface GigabitEthernet2
+  ip address 192.168.1.2 255.255.255.0
++ shutdown
+  negotiation auto
+  no mop enabled
+  no mop sysid

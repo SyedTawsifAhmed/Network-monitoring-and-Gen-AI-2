@@ -22,17 +22,19 @@
   "rollback_actions": [],
   "recognized_commands": 0,
   "unrecognized_commands": [
-    "Current configuration : 4359 bytes",
-    "description external"
+    "Current configuration : 4425 bytes",
+    "archive",
+    "path bootflash:/archive",
+    "maximum 14"
   ],
   "configuration_diff": [
     "--- current",
     "+++ proposed",
-    "@@ -1,223 +1,3 @@",
+    "@@ -1,227 +1,5 @@",
     "-Building configuration...",
-    " Current configuration : 4359 bytes",
+    " Current configuration : 4425 bytes",
     "-!",
-    " ! Last configuration change at 00:05:39 UTC Wed Jul 22 2026",
+    " ! Last configuration change at 02:17:55 UTC Fri Jul 24 2026",
     "-!",
     "-version 17.3",
     "-service timestamps debug datetime msec",
@@ -111,6 +113,6 @@
   "engine_version": "2.0.0",
   "ruleset_version": "ios-risk-rules-2026.07",
   "policy_profile": "enterprise_network_default",
-  "evaluated_at": "2026-07-22T23:25:09.666138+00:00",
-  "input_sha256": "d39d987e57f0022fbd4b840f7dd98f86fa0cfd2f0d4c9e71bca3563351083fe7"
+  "evaluated_at": "2026-07-25T18:57:51.486453+00:00",
+  "input_sha256": "0921ec58ddbf68bc1da61ad4151a52ac6d30ec25d7db51155589f36bf1865041"
 }

@@ -263,9 +263,6 @@ def rollback_devices(device_names, dry_run, hours):
         archive_path, _ = rollback_configs[host_name]
 
         if multi_result.failed:
-            # Walk the sub-task results to find the deepest real exception.
-            # NornirSubTaskError is just a wrapper — the NAPALM exception is
-            # stored in the leaf sub-task result (e.g. napalm_configure_rollback).
             real_err = None
             for item in multi_result:
                 if not item.failed or not item.exception:

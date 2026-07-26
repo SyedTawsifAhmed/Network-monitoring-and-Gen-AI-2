@@ -1,19 +1,25 @@
 {
-  "headline": "No Configuration Changes Detected",
-  "executive_summary": "The configuration diff shows only a timestamp update. No functional configuration changes were applied to the device.",
-  "technical_summary": "Only the 'Last configuration change' timestamp was updated; no operational configuration parameters were modified.",
-  "change_type": "Unknown",
-  "affected_services": [],
-  "changed_areas": [],
+  "headline": "Archive configuration update",
+  "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was logged.",
+  "technical_summary": "Added archive path and maximum file count. An invalid input error was logged.",
+  "change_type": "Telemetry Change",
+  "affected_services": [
+    "Management"
+  ],
+  "changed_areas": [
+    "Archive"
+  ],
   "risk_level": "Low",
-  "risk_score": 0,
+  "risk_score": 10,
   "decision_recommendation": "Approve",
-  "risk_reason": "No functional changes were made to the device configuration.",
-  "potential_impact": "None.",
-  "validation_checks": [],
-  "recommended_action": "None required.",
-  "rollback_recommendation": "None required.",
+  "risk_reason": "The change is purely administrative and does not affect traffic or routing.",
+  "potential_impact": "None expected.",
+  "validation_checks": [
+    "show archive"
+  ],
+  "recommended_action": "None.",
+  "rollback_recommendation": "Not required.",
   "anomalies": [
-    "% Invalid input detected at '^' marker."
+    "Invalid input detected in logs"
   ]
 }

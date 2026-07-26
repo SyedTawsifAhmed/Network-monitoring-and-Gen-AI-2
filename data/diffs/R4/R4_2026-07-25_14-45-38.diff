@@ -1,0 +1,24 @@
+diff --git a/data/configs/current/R4.cfg b/data/configs/current/R4.cfg
+index 387ad75..d7d0439 100644
+--- a/data/configs/current/R4.cfg
++++ b/data/configs/current/R4.cfg
+@@ -1,7 +1,7 @@
+ Building configuration...
+-Current configuration : 4381 bytes
++Current configuration : 4426 bytes
+ !
+-! Last configuration change at 01:34:26 UTC Fri Jul 24 2026
++! Last configuration change at 02:16:54 UTC Fri Jul 24 2026
+ !
+ version 17.3
+ service timestamps debug datetime msec
+@@ -100,6 +100,9 @@ crypto pki certificate chain SLA-TrustPoint
+ !
+ license udi pid CSR1000V sn 9SDYAKDLJCB
+ diagnostic bootup level minimal
++archive
++ path bootflash:/archive
++ maximum 14
+ memory free low-watermark processor 71464
+ !
+ !

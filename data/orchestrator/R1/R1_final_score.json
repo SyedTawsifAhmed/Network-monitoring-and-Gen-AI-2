@@ -1,88 +1,76 @@
 {
-  "generated_at": "2026-07-22T23:25:09.297755+00:00",
-  "final_score": 56.8,
-  "risk_level": "high",
+  "generated_at": "2026-07-25T18:49:36.099953+00:00",
+  "final_score": 35.0,
+  "risk_level": "medium",
   "decision": "manual_review",
   "decision_reason": "The change has material or unclear service impact and requires operator approval.",
-  "weighted_score_before_overrides": 56.8,
+  "weighted_score_before_overrides": 17.8,
   "weights": {
     "cloud_ai": 0.25,
     "local_ai": 0.35,
     "rule_engine": 0.4
   },
   "source_scores": {
-    "cloud_ai": 75.0,
-    "local_ai": 55.0,
-    "rule_engine": 47.0
+    "cloud_ai": 15.0,
+    "local_ai": 0.0,
+    "rule_engine": 35.0
   },
   "source_levels": {
-    "cloud_ai": "high",
-    "local_ai": "high",
+    "cloud_ai": "low",
+    "local_ai": "low",
     "rule_engine": "medium"
   },
   "source_decision_hints": {
-    "cloud_ai": "manual_review",
-    "local_ai": "approve_with_conditions_or_senior_approval_required",
+    "cloud_ai": "warn",
+    "local_ai": "approve",
     "rule_engine": "manual_review"
   },
   "source_reasons": {
     "cloud_ai": [
-      "The configuration change shuts down the interface that the newly configured OSPF process is attempting to use, which will result in a routing failure for the internal peer.",
-      "Loss of connectivity to the internal routing peer on GigabitEthernet2. OSPF adjacency will fail to establish."
+      "The change is administrative and low-risk, but the presence of an invalid input log indicates a potential configuration syntax issue.",
+      "Minimal; the configuration change was partially successful, but the invalid command may have been ignored."
     ],
     "local_ai": [
-      "The proposed change involves shutting down an interface which could disrupt connectivity and routing if this interface is critical to the network topology. Additionally, the OSPF network addition might affect routing adjacencies."
-    ],
-    "rule_engine": [
-      "OSPF network statements may advertise new prefixes or form new adjacencies."
-    ]
-  },
-  "source_affected_areas": {
-    "cloud_ai": [
-      "OSPF",
-      "Interface",
-      "routing",
-      "internal-routing-peer"
-    ],
-    "local_ai": [
-      "interface",
-      "connectivity",
-      "routing"
-    ],
-    "rule_engine": [
-      "ospf",
-      "routing"
-    ]
-  },
-  "source_destructive_operations": {
-    "cloud_ai": [],
-    "local_ai": [
-      "interface_shutdown"
+      "No changes detected in the configuration."
     ],
     "rule_engine": []
   },
-  "overrides_applied": [],
-  "hard_stop_triggered": false,
-  "destructive_operations": [
-    "interface_shutdown"
+  "source_affected_areas": {
+    "cloud_ai": [
+      "Archive",
+      "System",
+      "Management"
+    ],
+    "local_ai": [
+      "none"
+    ],
+    "rule_engine": []
+  },
+  "source_destructive_operations": {
+    "cloud_ai": [],
+    "local_ai": [],
+    "rule_engine": []
+  },
+  "overrides_applied": [
+    "rule_engine_safety_floor"
   ],
+  "hard_stop_triggered": false,
+  "destructive_operations": [],
   "affected_areas": [
-    "OSPF",
-    "Interface",
-    "routing",
-    "internal-routing-peer",
-    "connectivity"
+    "Archive",
+    "System",
+    "Management",
+    "none"
   ],
   "supporting_reasons": [
-    "The configuration change shuts down the interface that the newly configured OSPF process is attempting to use, which will result in a routing failure for the internal peer.",
-    "Loss of connectivity to the internal routing peer on GigabitEthernet2. OSPF adjacency will fail to establish.",
-    "The proposed change involves shutting down an interface which could disrupt connectivity and routing if this interface is critical to the network topology. Additionally, the OSPF network addition might affect routing adjacencies.",
-    "OSPF network statements may advertise new prefixes or form new adjacencies."
+    "The change is administrative and low-risk, but the presence of an invalid input log indicates a potential configuration syntax issue.",
+    "Minimal; the configuration change was partially successful, but the invalid command may have been ignored.",
+    "No changes detected in the configuration."
   ],
   "notification": {
-    "severity": "high",
-    "title": "[HIGH] Network change decision: Manual Review",
-    "message": "Final risk score: 56.8/100.\nOverall decision: Manual Review.\n\nCloud AI summary:\n  - Score: 75.0\n  - Risk level: high\n  - Recommendation: manual_review\n  - Key findings: The configuration change shuts down the interface that the newly configured OSPF process is attempting to use, which will result in a routing failure for the internal peer.; Loss of connectivity to the internal routing peer on GigabitEthernet2. OSPF adjacency will fail to establish.\n  - Changed or affected areas: OSPF; Interface; routing; internal-routing-peer\n\nLocal AI summary:\n  - Score: 55.0\n  - Risk level: high\n  - Recommendation: approve_with_conditions_or_senior_approval_required\n  - Key findings: The proposed change involves shutting down an interface which could disrupt connectivity and routing if this interface is critical to the network topology. Additionally, the OSPF network addition might affect routing adjacencies.\n  - Changed or affected areas: interface; connectivity; routing\n  - Destructive operations: interface_shutdown\n\nRule-engine summary:\n  - Score: 47.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: OSPF network statements may advertise new prefixes or form new adjacencies.\n  - Affected areas: ospf; routing\n\nAggregate affected areas: OSPF; Interface; routing; internal-routing-peer; connectivity\nSupporting reasons: The configuration change shuts down the interface that the newly configured OSPF process is attempting to use, which will result in a routing failure for the internal peer.; Loss of connectivity to the internal routing peer on GigabitEthernet2. OSPF adjacency will fail to establish.; The proposed change involves shutting down an interface which could disrupt connectivity and routing if this interface is critical to the network topology. Additionally, the OSPF network addition might affect routing adjacencies.; OSPF network statements may advertise new prefixes or form new adjacencies.\nDestructive operations detected: interface_shutdown\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
+    "severity": "medium",
+    "title": "[MEDIUM] Network change decision: Manual Review",
+    "message": "Final risk score: 35.0/100.\nOverall decision: Manual Review.\n\nCloud AI summary:\n  - Score: 15.0\n  - Risk level: low\n  - Recommendation: warn\n  - Key findings: The change is administrative and low-risk, but the presence of an invalid input log indicates a potential configuration syntax issue.; Minimal; the configuration change was partially successful, but the invalid command may have been ignored.\n  - Changed or affected areas: Archive; System; Management\n\nLocal AI summary:\n  - Score: 0.0\n  - Risk level: low\n  - Recommendation: approve\n  - Key findings: No changes detected in the configuration.\n  - Changed or affected areas: none\n  - Destructive operations: None noted\n\nRule-engine summary:\n  - Score: 35.0\n  - Risk level: medium\n  - Decision hint: manual_review\n  - Findings: None noted\n  - Affected areas: None noted\n\nAggregate affected areas: Archive; System; Management; none\nSupporting reasons: The change is administrative and low-risk, but the presence of an invalid input log indicates a potential configuration syntax issue.; Minimal; the configuration change was partially successful, but the invalid command may have been ignored.; No changes detected in the configuration.\n\nNotification generated from existing cloud, local, and rule-engine outputs. No additional cloud model call was made to assemble this summary.",
     "requires_acknowledgement": true
   },
   "notification_delivery": {

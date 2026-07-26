@@ -1,26 +1,30 @@
 {
-  "headline": "Configuration Timestamp Update",
-  "executive_summary": "The configuration change detected on device R2 is limited to a metadata update of the last configuration change timestamp. No functional configuration parameters were modified.",
-  "technical_summary": "Only the 'Last configuration change' timestamp was updated in the device configuration header. No operational changes were applied.",
-  "change_type": "Unknown",
+  "headline": "Interface shutdown and archive configuration update",
+  "executive_summary": "The device configuration was updated to include archive settings, and the GigabitEthernet2 interface was administratively shut down.",
+  "technical_summary": "Added archive configuration and applied 'shutdown' to interface GigabitEthernet2. An invalid input error was logged.",
+  "change_type": "Interface Change",
   "affected_services": [
-    "None"
+    "Routing",
+    "Management"
   ],
   "changed_areas": [
-    "System"
+    "Interface",
+    "Archive"
   ],
-  "risk_level": "Low",
-  "risk_score": 0,
-  "decision_recommendation": "Approve",
-  "risk_reason": "The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.",
-  "potential_impact": "None",
+  "risk_level": "High",
+  "risk_score": 75,
+  "decision_recommendation": "Deny",
+  "risk_reason": "Shutting down an active interface (GigabitEthernet2) that serves as an internal routing peer is a high-risk action that will disrupt network connectivity.",
+  "potential_impact": "Likely loss of connectivity to R1 and potential routing instability.",
   "validation_checks": [
-    "Verify device uptime",
-    "Check system logs for any unexpected errors"
+    "show ip interface brief",
+    "show ip ospf neighbor",
+    "ping 192.168.1.1"
   ],
-  "recommended_action": "No action required.",
-  "rollback_recommendation": "Not required.",
+  "recommended_action": "Immediately review the necessity of shutting down the interface and restore it if it was unintentional.",
+  "rollback_recommendation": "Rollback immediately if the interface shutdown was not part of a planned maintenance window.",
   "anomalies": [
-    "Invalid input detected log message suggests a minor syntax error during the configuration save process."
+    "Invalid input detected in logs",
+    "Unexpected interface shutdown"
   ]
 }

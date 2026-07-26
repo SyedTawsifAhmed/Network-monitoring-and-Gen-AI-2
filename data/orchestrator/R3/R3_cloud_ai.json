@@ -1,26 +1,25 @@
 {
-  "headline": "Configuration Timestamp Update",
-  "executive_summary": "The configuration change detected on device R3 is limited to a metadata update of the last configuration change timestamp. No functional configuration parameters were modified.",
-  "technical_summary": "Only the 'Last configuration change' timestamp was updated in the device configuration header. No operational changes were applied.",
-  "change_type": "Unknown",
+  "headline": "Archive configuration update",
+  "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was logged.",
+  "technical_summary": "Added archive path and maximum file count. An invalid input error was logged.",
+  "change_type": "Telemetry Change",
   "affected_services": [
-    "None"
+    "Management"
   ],
   "changed_areas": [
-    "System"
+    "Archive"
   ],
   "risk_level": "Low",
-  "risk_score": 0,
+  "risk_score": 10,
   "decision_recommendation": "Approve",
-  "risk_reason": "The change is strictly limited to a metadata timestamp update with no impact on device configuration or operational state.",
-  "potential_impact": "None",
+  "risk_reason": "The change is purely administrative and does not affect traffic or routing.",
+  "potential_impact": "None expected.",
   "validation_checks": [
-    "Verify device uptime",
-    "Check system logs for any unexpected errors"
+    "show archive"
   ],
-  "recommended_action": "No action required.",
+  "recommended_action": "None.",
   "rollback_recommendation": "Not required.",
   "anomalies": [
-    "Invalid input detected log message suggests a minor syntax error during the configuration save process."
+    "Invalid input detected in logs"
   ]
 }

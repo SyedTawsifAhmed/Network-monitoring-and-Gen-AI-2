@@ -1,11 +1,11 @@
 {
-  "rule_score": 0,
+  "rule_score": 35,
   "inherent_risk_score": 0,
-  "residual_risk_score": 0,
-  "risk_level": "low",
-  "decision_hint": "approve",
+  "residual_risk_score": 35,
+  "risk_level": "medium",
+  "decision_hint": "manual_review",
   "hard_stop_triggered": false,
-  "assessment_status": "complete",
+  "assessment_status": "incomplete",
   "confidence": 0.4,
   "evidence_completeness": 1.0,
   "missing_evidence": [],
@@ -21,15 +21,20 @@
   "validation_checks": [],
   "rollback_actions": [],
   "recognized_commands": 0,
-  "unrecognized_commands": [],
+  "unrecognized_commands": [
+    "Current configuration : 4426 bytes",
+    "archive",
+    "path bootflash:/archive",
+    "maximum 14"
+  ],
   "configuration_diff": [
     "--- current",
     "+++ proposed",
-    "@@ -1,223 +1 @@",
+    "@@ -1,227 +1,5 @@",
     "-Building configuration...",
-    "-Current configuration : 4360 bytes",
+    " Current configuration : 4426 bytes",
     "-!",
-    " ! Last configuration change at 23:17:27 UTC Wed Jul 22 2026",
+    " ! Last configuration change at 02:16:42 UTC Fri Jul 24 2026",
     "-!",
     "-version 17.3",
     "-service timestamps debug datetime msec",
@@ -108,6 +113,6 @@
   "engine_version": "2.0.0",
   "ruleset_version": "ios-risk-rules-2026.07",
   "policy_profile": "enterprise_network_default",
-  "evaluated_at": "2026-07-22T23:25:09.492900+00:00",
-  "input_sha256": "d1e053a79548e8463c5f65e33ff6a1bc69ba258aaa262cd2a4a6bcaeaa896ccf"
+  "evaluated_at": "2026-07-25T18:52:03.310943+00:00",
+  "input_sha256": "cbdd7cca0aee15810494ff6a8119bd88bec0be8b7ee29ac85c900c976d6b36fd"
 }

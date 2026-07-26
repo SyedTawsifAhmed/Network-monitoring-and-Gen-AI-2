@@ -1,25 +1,25 @@
 {
-  "headline": "Interface Description Added",
-  "executive_summary": "A description was added to the external interface GigabitEthernet1 on device R5. This is a documentation change and does not impact traffic flow or routing.",
-  "technical_summary": "Added 'description external' to interface GigabitEthernet1.",
-  "change_type": "Interface Change",
+  "headline": "Archive configuration update",
+  "executive_summary": "The device configuration was updated to include archive settings. A minor syntax error was logged.",
+  "technical_summary": "Added archive path and maximum file count. An invalid input error was logged.",
+  "change_type": "Telemetry Change",
   "affected_services": [
-    "None"
+    "Management"
   ],
   "changed_areas": [
-    "Interface"
+    "Archive"
   ],
   "risk_level": "Low",
-  "risk_score": 5,
+  "risk_score": 10,
   "decision_recommendation": "Approve",
-  "risk_reason": "The change is purely cosmetic (documentation) and carries no functional risk.",
-  "potential_impact": "None",
+  "risk_reason": "The change is purely administrative and does not affect traffic or routing.",
+  "potential_impact": "None expected.",
   "validation_checks": [
-    "show running-config interface GigabitEthernet1"
+    "show archive"
   ],
-  "recommended_action": "Verify the description is correct.",
-  "rollback_recommendation": "Remove the description if it is incorrect.",
+  "recommended_action": "None.",
+  "rollback_recommendation": "Not required.",
   "anomalies": [
-    "Invalid input log detected, likely due to a syntax error during the configuration attempt."
+    "Invalid input detected in logs"
   ]
 }
