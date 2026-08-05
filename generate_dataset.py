@@ -523,7 +523,6 @@ def write_jsonl(path: Path, rows: list[dict]) -> None:
         for row in rows:
             f.write(json.dumps(chat_only(row), ensure_ascii=False) + "\n")
 
-
 def build_dataset(total_samples: int = TOTAL_SAMPLES) -> list[dict]:
     if total_samples % 4 != 0:
         raise ValueError("TOTAL_SAMPLES should be divisible by 4 for balanced risk labels.")
@@ -537,32 +536,6 @@ def build_dataset(total_samples: int = TOTAL_SAMPLES) -> list[dict]:
 
     random.shuffle(samples)
     return samples
-
-
-def split_balanced(samples: list[dict]):
-    by_level = defaultdict(list)
-    for sample in samples:
-        by_level[sample["risk_level"]].append(sample)
-
-    train, validation, test = [], [], []
-
-    for level, items in by_level.items():
-        random.shuffle(items)
-
-        n = len(items)
-        train_end = int(n * 0.70)
-        validation_end = int(n * 0.85)
-
-        train.extend(items[:train_end])
-        validation.extend(items[train_end:validation_end])
-        test.extend(items[validation_end:])
-
-    random.shuffle(train)
-    random.shuffle(validation)
-    random.shuffle(test)
-
-    return train, validation, test
-
 
 def write_metadata(output_dir: Path, samples: list[dict]) -> None:
     with (output_dir / "metadata.csv").open("w", newline="", encoding="utf-8") as f:
@@ -582,112 +555,16 @@ def write_metadata(output_dir: Path, samples: list[dict]) -> None:
                 }
             )
 
-
-def write_docs(output_dir: Path, samples: list[dict], train: list[dict], validation: list[dict], test: list[dict]) -> None:
-    counts = Counter(sample["risk_level"] for sample in samples)
-
-    summary = f"""# Qwen Network Configuration Risk Dataset
-
-This dataset contains {len(samples)} synthetic Cisco IOS-style configuration risk examples for Qwen fine-tuning or evaluation.
-
-## Files
-
-- `train.jsonl`: {len(train)} samples
-- `validation.jsonl`: {len(validation)} samples
-- `test.jsonl`: {len(test)} samples
-- `all_samples_with_metadata.jsonl`: all samples with metadata preserved
-- `metadata.csv`: sample-level metadata
-- `labeling_guide.md`: explanation of labels and actions
-- `generate_dataset.py`: generator script
-
-## Risk Distribution
-
-- Low: {counts["low"]}
-- Medium: {counts["medium"]}
-- Medium-high: {counts["medium-high"]}
-- High: {counts["high"]}
-
-## Purpose
-
-The dataset teaches a model to map:
-
-Cisco IOS proposed command(s) + current configuration + topology context + device role
-
-to:
-
-risk score + risk level + affected areas + reason + recommended action.
-
-## Output schema
-
-```json
-{{
-  "risk_score": 90,
-  "risk_level": "high",
-  "affected_areas": ["interface", "routing", "connectivity"],
-  "reason": "Short explanation of operational impact.",
-  "recommended_action": "reject_or_senior_approval_required"
-}}
-```
-
-## Notes
-
-This is synthetic data for a capstone prototype. Review samples and adjust scoring rules to match your final project topology, rubric, and source-of-truth model.
-"""
-
-    labeling = """# Labeling Guide
-
-## Risk levels
-
-- `low`
-  Minimal operational impact. Examples: interface description, banner, logging host, NTP server.
-
-- `medium`
-  May affect routing, monitoring, or connectivity for a limited scope. Examples: static route addition, OSPF network addition, interface IP change, SNMP community change.
-
-- `medium-high`
-  Could significantly affect connectivity, segmentation, routing behavior, or management access. Examples: trunk VLAN changes, OSPF cost changes, VTY access changes, BGP neighbor additions.
-
-- `high`
-  May cause outage, loss of routing, management lockout, broad traffic block, or destructive device state. Examples: interface shutdown on critical link, no router ospf, no BGP neighbor, deny-any ACL inbound, reload, write erase.
-
-## Recommended actions
-
-- `approve`: low-risk change can proceed with normal logging.
-- `warn`: medium-risk change should be confirmed by the operator.
-- `manual_review_required`: medium-high change should be reviewed by a network engineer.
-- `reject_or_senior_approval_required`: high-risk or hard-stop change should be rejected unless approved by a senior engineer with rollback.
-"""
-
-    (output_dir / "dataset_summary.md").write_text(summary, encoding="utf-8")
-    (output_dir / "labeling_guide.md").write_text(labeling, encoding="utf-8")
-
-
-def zip_dataset(output_dir: Path) -> Path:
-    zip_path = output_dir.with_suffix(".zip")
-
-    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
-        for path in output_dir.rglob("*"):
-            z.write(path, arcname=path.relative_to(output_dir))
-
-    return zip_path
-
-
 def main():
     OUTPUT_DIR.mkdir(exist_ok=True)
 
     samples = build_dataset(TOTAL_SAMPLES)
-    train, validation, test = split_balanced(samples)
-
-    write_jsonl(OUTPUT_DIR / "train.jsonl", train)
-    write_jsonl(OUTPUT_DIR / "validation.jsonl", validation)
-    write_jsonl(OUTPUT_DIR / "test.jsonl", test)
 
     with (OUTPUT_DIR / "all_samples_with_metadata.jsonl").open("w", encoding="utf-8") as f:
         for sample in samples:
             f.write(json.dumps(sample, ensure_ascii=False) + "\n")
 
     write_metadata(OUTPUT_DIR, samples)
-    write_docs(OUTPUT_DIR, samples, train, validation, test)
 
     # Copy this script into the output folder for reproducibility.
     script_path = Path(__file__)
@@ -697,10 +574,6 @@ def main():
     zip_path = zip_dataset(OUTPUT_DIR)
 
     print(f"Created dataset in: {OUTPUT_DIR}")
-    print(f"Created ZIP: {zip_path}")
-    print(f"Train: {len(train)}")
-    print(f"Validation: {len(validation)}")
-    print(f"Test: {len(test)}")
     print(f"Total: {len(samples)}")
     print(Counter(sample["risk_level"] for sample in samples))
 
